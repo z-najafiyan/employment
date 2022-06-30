@@ -30,14 +30,10 @@ class City(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=500, choices=CATEGORY)
-    fa_name=models.CharField(max_length=500)
 
     def __str__(self):
         return f"id:{self.id}--name:{self.name}"
 
-    def save(self,*args,**kwargs):
-        self.fa_name=self.get_name_display()
-        super(Category, self).save()
 
 
     class Meta:

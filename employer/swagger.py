@@ -7,6 +7,7 @@ from employer.serializers import EmployerUserPostSerializer, EmployerCompanyGetS
 from other_files.response_serialzer import UserTokenSwaggerSerializer
 
 state_param = openapi.Parameter('state', openapi.IN_QUERY, description="state manual param", type=openapi.TYPE_STRING)
+type_param = openapi.Parameter('type', openapi.IN_QUERY, description="type manual param", type=openapi.TYPE_STRING)
 
 swagger_kwargs = {
     "sing_up": {
@@ -31,7 +32,7 @@ swagger_kwargs = {
         "responses": {201: EmployerCompanyPostSerializer()}},
     "announcement_get": {
         "method": "GET",
-        "manual_parameters": [state_param],
+        "manual_parameters": [state_param,type_param],
 
         "responses": {201: EmployerAnnouncementGetSerializer()}},
     "announcement_post": {

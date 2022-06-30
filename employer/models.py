@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from django.core.validators import MaxValueValidator
 from django.db import models
@@ -11,9 +12,11 @@ from costant.constant import (ANNOUNCEMENT_STATUS,
                               TYPE_COOPERATION,
                               MILITARY_SERVICE,
                               APPLICANT_STATUS,
-                              GENDER,
+                              GENDER, NUMBER_EMPLOYEES,
                               )
 
+def timestamp(date):
+    return time.mktime(date.timetuple())
 
 class Activity(models.Model):
     name = models.CharField(max_length=500, unique=True)
@@ -33,13 +36,14 @@ class Company(models.Model):
                                  on_delete=models.CASCADE, null=True, blank=True)
     city = models.ForeignKey(City, related_name="companies", related_query_name="company", on_delete=models.CASCADE,
                              null=True, blank=True)
-    phone = models.CharField(max_length=20, null=True, blank=True)
+    mobile = models.CharField(max_length=11, null=True, blank=True)
     activity = models.ForeignKey(Activity, related_name="companies", related_query_name="company",
                                  on_delete=models.CASCADE, null=True, blank=True)
 
     address = models.TextField(max_length=4000, null=True, blank=True)
     website = models.URLField(null=True, blank=True)
     description = models.TextField(max_length=20000, null=True, blank=True)
+    number_employees = models.CharField(choices=NUMBER_EMPLOYEES, max_length=500, blank=True, null=True)
 
     def __str__(self):
         return f"id:{self.id}--name:{self.persian_name}"
@@ -68,6 +72,12 @@ class Applicant(models.Model):
 
     def __str__(self):
         return f"id:{self.id}"
+
+    @property
+    def created_date_time_ts(self):
+        if self.created_date_time:
+            return timestamp(self.created_date_time) * 1000
+        return None
 
     class Meta:
         ordering = ["-id"]
@@ -111,6 +121,12 @@ class Announcement(models.Model):
     class Meta:
         ordering = ["-id"]
 
+    @property
+    def creation_date_ts(self):
+        if self.creation_date:
+            return timestamp(self.creation_date) * 1000
+        return None
+
 
 class StatusLog(models.Model):
     candidate = models.ForeignKey(Candidate, related_name="status_log", related_query_name="status_logs",
@@ -127,3 +143,9 @@ class StatusLog(models.Model):
 
     class Meta:
         ordering = ["-id"]
+
+    @property
+    def created_date_time_ts(self):
+        if self.created_date_time:
+            return timestamp(self.created_date_time) * 1000
+        return None

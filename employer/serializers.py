@@ -4,7 +4,7 @@ from candidate.models import Candidate, Resume, Education, PersonalInfo, WorkExp
 from common.models import User, Category, Skill
 from employer.models import Company, Announcement, StatusLog, Applicant, Employer
 from other_files.response_serialzer import CityResponseSerializer, ProvinceResponseSerializer, \
-    ActivityResponseSerializer, UserResponseSerializer
+    ActivityResponseSerializer, UserResponseSerializer, CategoryResponseSerializer
 
 
 class EmployerUserPostSerializer(serializers.ModelSerializer):
@@ -52,16 +52,23 @@ class EmployerCompanyGetSerializer(serializers.ModelSerializer):
     province = ProvinceResponseSerializer()
     city = CityResponseSerializer()
     activity = ActivityResponseSerializer()
+    number_employees = serializers.SerializerMethodField()
 
     class Meta:
         model = Company
         fields = "__all__"
 
+    def get_number_employees(self, obj):
+        if obj.number_employees:
+            return {"en_name": obj.number_employees,
+                    "fa_name": obj.get_number_employees_display()}
+        return None
+
 
 class EmployerAnnouncementPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement
-        exclude = ["creator_user", "company"]
+        exclude = ["creator_user", "company", "applicant"]
 
 
 class EmployerAnnouncementListSerializer(serializers.ModelSerializer):
@@ -70,11 +77,13 @@ class EmployerAnnouncementListSerializer(serializers.ModelSerializer):
     number_confirmation = serializers.SerializerMethodField()
     number_hired = serializers.SerializerMethodField()
     number_rejected = serializers.SerializerMethodField()
+    province = ProvinceResponseSerializer()
+    category = CategoryResponseSerializer()
 
     class Meta:
         model = Announcement
-        fields = ["title", "category", "status_name", "number_not_checked", "number_awaiting_status",
-                  "number_confirmation", "number_hired",
+        fields = ["title", "category", "number_not_checked", "number_awaiting_status",
+                  "number_confirmation", "number_hired", "number_rejected", "province"
                   ]
 
     def get_number_not_checked(self, obj):
@@ -99,9 +108,11 @@ class EmployerAnnouncementListSerializer(serializers.ModelSerializer):
 
 
 class EmployerAnnouncementGetSerializer(serializers.ModelSerializer):
+    creation_date = serializers.IntegerField(source="creation_date_ts", default=None)
+
     class Meta:
         model = Announcement
-        exclude = ["creator_user", "company"]
+        fields = ["id", "title", "creation_date", "province"]
 
 
 class EmployerUserGetSerializer(serializers.ModelSerializer):
@@ -127,10 +138,18 @@ class EmployerCandidateGetSerializer(serializers.ModelSerializer):
 
 class EmployerApplicantGetSerializer(serializers.ModelSerializer):
     candidate = EmployerCandidateGetSerializer()
+    created_date_time = serializers.IntegerField(source="created_date_time_ts", default=None)
+    applicant_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Applicant
-        fields = ["applicant_status", "candidate", "created_date_time"]
+        fields = ["applicant_status", "candidate", "created_date_time","id"]
+
+    def get_applicant_status(self, obj):
+        if obj.applicant_status:
+            return {'fa_name': obj.get_applicant_status_display(),
+                    "en_name": obj.applicant_status}
+        return None
 
 
 class EmployerApplicantPatchSerializer(serializers.ModelSerializer):

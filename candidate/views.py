@@ -28,11 +28,9 @@ from other_files.helper import FactoryGetObject
 from other_files.permissions import IsCandidate
 
 
-
-
 class CandidateView(viewsets.ModelViewSet):
     def get_permissions(self):
-        if self.action in ["sing_up", "sing_in","announcement_list","new_announcement"]:
+        if self.action in ["sing_up", "sing_in", "announcement_list", "new_announcement"]:
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated, IsCandidate]
@@ -55,15 +53,20 @@ class CandidateView(viewsets.ModelViewSet):
             'access': str(refresh.access_token),
         }
         return Response(res, status=status.HTTP_201_CREATED)
+
     @swagger_auto_schema(**swagger_kwargs["sing_in"])
     @action(methods=["POST"], detail=False)
     def sing_in(self, request):
         email = request.data["email"]
         password = request.data["password"]
         try:
-            user = User.objects.get(email=email, password=password)
+            user = User.objects.get(email=email, )
         except ObjectDoesNotExist:
-            return Response([{"user": "email or password not valid"}], status=status.HTTP_404_NOT_FOUND)
+            return Response([{"user": "email not valid"}], status=status.HTTP_404_NOT_FOUND)
+
+        if not user.check_password(password):
+            return Response([{"user": "password not valid"}], status=status.HTTP_404_NOT_FOUND)
+
         try:
             _ = Candidate.objects.get(user=user)
         except ObjectDoesNotExist:
@@ -87,7 +90,7 @@ class CandidateView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["resume_patch"])
     @action(methods=["GET", "PATCH"], detail=False)
     def resume(self, request):
-        if request.method=="GET":
+        if request.method == "GET":
             candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             serializer = CandidateResumeGETSerializer(candidate.resume)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -276,7 +279,6 @@ class CandidateView(viewsets.ModelViewSet):
             work_experience.delete()
             return Response({'message': "done"}, status=status.HTTP_204_NO_CONTENT)
 
-
     @swagger_auto_schema(**swagger_kwargs["personal_info_post"])
     @swagger_auto_schema(**swagger_kwargs["personal_info_get"])
     @swagger_auto_schema(**swagger_kwargs["personal_info_delete"])
@@ -290,7 +292,7 @@ class CandidateView(viewsets.ModelViewSet):
         elif request.method == "PATCH":
             personal_info = FactoryGetObject.find_object(PersonalInfo, pk=pk)
             serializer = CandidatePersonalInfoPostSerializer(data=request.data, instance=personal_info,
-                                                               partial=True)
+                                                             partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -361,7 +363,7 @@ class CandidateView(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_200_OK)
 
     @action(methods=["GET"], detail=False)
-    def new_announcement(self,request):
+    def new_announcement(self, request):
         announcement = Announcement.objects.all()[:9]
         response = CandidateAnnouncementListSerializer(announcement, many=True).data
         return Response(response, status=status.HTTP_200_OK)
@@ -389,4 +391,3 @@ class CandidateView(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             return Response({"message": "state is not define"}, status=status.HTTP_404_NOT_FOUND)
-

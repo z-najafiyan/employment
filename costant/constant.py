@@ -20,12 +20,14 @@ MILITARY_SERVICE = [
     ('inductee', 'مشمول'),
     ('exemption', 'معافیت پزشکی'),
     ('end_of_service_card', 'کارت پایان خدمت'),
-    ('others', 'سایر'),
+    ('not_important', 'مهم نیست'),
 ]
 CATEGORY = [
-    ("ui_ux", "طراح رابط کاربری "),
-    ("backend", "برنامه نویس سرور"),
-    ("frontend", "برنامه نویس")
+    ("designer", "Designer"),
+    ("backend", "Backend developer"),
+    ("frontend", "Frontend developer"),
+    ("full_stack","Full stack developer"),
+    ("manager","Manager"),
 ]
 
 APPLICANT_STATUS = [
@@ -37,7 +39,6 @@ APPLICANT_STATUS = [
 ]
 ANNOUNCEMENT_STATUS = [
     ("active", "فعال"),
-    ("archive", "آرشيو"),
     ("closed", "بسته شده"),
 ]
 
@@ -114,3 +115,15 @@ JOB_BENEFITS = [("promotional", "امکان ترفیع سمت"),
                 ("commuting", "سرویس رفت وآمد"),
                 ("food", "غذا برا عهده ی شرکت ")
                 ]
+
+NUMBER_EMPLOYEES=[
+    ("1-50","1 تا 50 نفر "),
+    ("51-100","51 تا 100 نفر "),
+    ("101-200","101 تا 200 نفر "),
+    ("201-300","201 تا 300 نفر "),
+    ("301-400","301 تا 400 نفر "),
+    ("401-500","401 تا 500 نفر "),
+    ("501-1000","501 تا 1000 نفر "),
+    ("1001","بیشتر از 1000 نفر"),
+
+]

@@ -58,13 +58,15 @@ class EmployerView(viewsets.ModelViewSet):
         email = serializer.validated_data["email"]
         password = serializer.validated_data["password"]
         try:
-            user = User.objects.get(email=email, password=password)
+            user = User.objects.get(email=email)
         except ObjectDoesNotExist:
-            return Response([{"user": "email or password not valid"}], status=status.HTTP_404_NOT_FOUND)
+            return Response([{"user": "email not valid"}], status=status.HTTP_404_NOT_FOUND)
+        if not user.check_password(password):
+            return Response([{"user": "password not valid"}], status=status.HTTP_404_NOT_FOUND)
         try:
             _ = Employer.objects.get(user=user)
         except ObjectDoesNotExist:
-            return Response([{"user": "email or password not valid"}], status=status.HTTP_404_NOT_FOUND)
+            return Response([{"user": "email not valid"}], status=status.HTTP_404_NOT_FOUND)
         refresh = RefreshToken.for_user(user)
         res = {
             'refresh': str(refresh),
@@ -74,7 +76,7 @@ class EmployerView(viewsets.ModelViewSet):
 
     @swagger_auto_schema(**swagger_kwargs["employer"])
     @action(methods=["GET"], detail=False)
-    def employesr(self, request):
+    def employer(self, request):
         employer = FactoryGetObject.find_object(Employer, user=request.user)
         serializer = EmployerSerializer(employer)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -113,11 +115,12 @@ class EmployerView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == "GET":
             state = request.GET.get("state")
+            announcement_type=request.GET.get("type")
             if state == "list":
                 employer = FactoryGetObject.find_object(Employer, user=request.user)
-                announcements = FactoryGetObject.find_object(Announcement, company=employer.company)
+                announcements = Announcement.objects.filter(status_name=announcement_type,company=employer.company)
                 page = self.paginate_queryset(announcements)
-                res = self.paginate_queryset(EmployerAnnouncementListSerializer(page).data).data
+                res = self.get_paginated_response(EmployerAnnouncementListSerializer(page,many=True).data).data
                 return Response(res, status=status.HTTP_200_OK)
             elif state == "detail":
                 announcement = FactoryGetObject.find_object(Announcement, pk=pk)
@@ -135,8 +138,10 @@ class EmployerView(viewsets.ModelViewSet):
             applicants = announcement.applicant
             data = request.GET
             applicant_filter = ApplicantFilter(queryset=applicants, data=data)
-            serializer = EmployerApplicantGetSerializer(applicant_filter)
-            return Response(serializer.data)
+            page=self.paginate_queryset(applicant_filter)
+            res = self.get_paginated_response(EmployerApplicantGetSerializer(applicant_filter,
+                                                                             many=True).data).data
+            return Response(res)
         else:
             announcement = FactoryGetObject.find_object(Announcement, pk=pk)
             applicant = FactoryGetObject.find_object(Applicant, pk=request.data["id"])
