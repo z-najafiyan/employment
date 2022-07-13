@@ -11,7 +11,7 @@ from common.models import Province, City
 class CommonView(viewsets.ModelViewSet):
     @action(methods=["post"], detail=False)
     def create_data(self, request):
-        data = pd.read_excel(r'/var/www/employment/other_files/province_list.xlsx')
+        data = pd.read_excel(r'other_files/province_list.xlsx')
         data_obj = pd.DataFrame(data,).values
         for city_name,province_name in data_obj:
             obj_province,_=Province.objects.get_or_create(name=province_name)
