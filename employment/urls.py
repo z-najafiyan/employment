@@ -22,6 +22,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from candidate.views import CandidateView
 from common.views import CommonView
+from constant.views import ConstantView
 from employer.views import EmployerView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -45,6 +46,7 @@ router = routers.DefaultRouter()
 router.register(r"candidate", viewset=CandidateView, basename="candidate")
 router.register(r"common", viewset=CommonView, basename="common")
 router.register(r"employer", viewset=EmployerView, basename="employer")
+router.register(r"constant", viewset=ConstantView, basename="constant")
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include(router.urls)),

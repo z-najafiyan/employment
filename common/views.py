@@ -6,6 +6,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 
 from common.models import Province, City
+from other_files.response_serialzer import ProvinceResponseSerializer, CityResponseSerializer
 
 
 class CommonView(viewsets.ModelViewSet):
@@ -19,4 +20,14 @@ class CommonView(viewsets.ModelViewSet):
         return Response({"message":"done"},status=status.HTTP_200_OK)
 
 
+    @action(methods=["get"], detail=False)
+    def province(self,request):
+        instances=Province.objects.all()
+        serializer=ProvinceResponseSerializer(instances)
+        return Response(serializer.data,)
 
+    @action(methods=["get"], detail=False)
+    def city(self,request):
+        instances=City.objects.all()
+        serializer=CityResponseSerializer(instances)
+        return Response(serializer.data,)

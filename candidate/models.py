@@ -2,8 +2,8 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 from common.models import (User, Province, Category, Skill)
-from costant.constant import (MARITAL_STATUS, GENDER, MONTH, GRADE, MASTERY_LEVEL, LANGUAGE_NAME, TYPE_COOPERATION,
-                              DEGREE_OF_EDUCATIONS, LEVEL, SALARY, JOB_BENEFITS)
+from constant.views import (MARITAL_STATUS, GENDER, MONTH, GRADE, MASTERY_LEVEL, LANGUAGE_NAME, TYPE_COOPERATION,
+                                DEGREE_OF_EDUCATIONS, LEVEL, SALARY, JOB_BENEFITS)
 
 
 # Create your models here.
@@ -55,12 +55,12 @@ class WorkExperience(models.Model):
 
 
 class PersonalInfo(models.Model):
-    province = models.ForeignKey(Province, null=True, blank=True, related_name="personal_infos",
-                                 related_query_name="personal_info", on_delete=models.CASCADE)
+    # province = models.ForeignKey(Province, null=True, blank=True, related_name="personal_infos",
+    #                              related_query_name="personal_info", on_delete=models.CASCADE)
+    full_name=models.CharField(max_length=200,null=True,blank=True)
     address = models.TextField(max_length=20000, null=True, )
     years_birth = models.CharField(max_length=4, )
     gender = models.CharField(choices=GENDER, max_length=500, null=True, blank=True)
-    about_me = models.TextField(max_length=20000, null=True, blank=True)
     marital_status = models.CharField(choices=MARITAL_STATUS, max_length=1000, null=True, blank=True)
 
     def __str__(self):
@@ -109,6 +109,9 @@ class Resume(models.Model):
     job_preferences = models.ForeignKey(JobPreference, related_name="resumes", related_query_name="resume",
                                         on_delete=models.CASCADE, null=True, blank=True)
     work_experience = models.ManyToManyField(WorkExperience, related_name="resumes", related_query_name="resume", )
+    about_me = models.TextField(max_length=20000, null=True, blank=True)
+
+    language=models.ManyToManyField(Language)
 
     def __str__(self):
         return f"id:{self.id}"
@@ -121,6 +124,8 @@ class Candidate(models.Model):
     user = models.ForeignKey(User, related_name="candidates", related_query_name="candidate", on_delete=models.CASCADE)
     resume = models.ForeignKey(Resume, related_name="candidates", related_query_name="candidate",
                                on_delete=models.CASCADE)
+    mobile = models.CharField(max_length=11, null=True, blank=True)
+
 
     def __str__(self):
         return f"id{self.id}"
@@ -134,7 +139,7 @@ class MarkedAnnouncement(models.Model):
                                   related_query_name="marked_announcement",
                                   on_delete=models.CASCADE)
 
-    # announcement = models.ManyToManyField("employer.Announcement")
+    announcement = models.ManyToManyField("employer.Announcement")
 
     def __str__(self):
         return f"id{self.id}"

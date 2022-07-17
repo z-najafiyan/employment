@@ -2,7 +2,7 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from candidate.models import (MarkedAnnouncement, Education, JobPreference, Resume, WorkExperience, PersonalInfo,
-                              Candidate)
+                              Candidate, Language)
 from common.models import (User, Skill)
 from employer.models import (Announcement, Company, Applicant)
 from other_files.response_serialzer import (ProvinceResponseSerializer, JobBenefitsResponseSerializer,
@@ -35,6 +35,11 @@ class CandidateUserSingInSerializer(serializers.ModelSerializer):
         model = User
         fields = ["email", "password"]
 
+class CandidateUserSerializer(serializers.ModelSerializer):
+    mobile = serializers.CharField(max_length=11, allow_null=True, )
+    class Meta:
+        model=User
+        fields = ["email", "mobile"]
 
 class CandidateSerializer(serializers.ModelSerializer):
     user = UserResponseSerializer()
@@ -62,8 +67,20 @@ class CandidateJobPreferencePostSerializer(serializers.ModelSerializer):
         model = JobPreference
         fields = ["resumes", "province", "type_cooperation", "mastery_level", "minimum_salary", "degree_of_educations",
                   "job_benefits", "id"]
-
-
+class CandidateLanguagePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Language
+        fields=["id","name","mastery_level","resumes"]
+class CandidateLanguageGetSerializer(serializers.ModelSerializer):
+    mastery_level=serializers.SerializerMethodField()
+    class Meta:
+        model=Language
+        fields=["id","name","mastery_level"]
+    def get_mastery_level(self, obj):
+        if obj.mastery_level:
+            return {"en_name": obj.mastery_level,
+                    "fa_name": obj.get_mastery_level_display()}
+        return None
 class CandidateJobPreferenceGetSerializer(serializers.ModelSerializer):
     province = ProvinceResponseSerializer()
     job_benefits = JobBenefitsResponseSerializer(many=True)
@@ -203,7 +220,7 @@ class CandidateResumeGETSerializer(serializers.ModelSerializer):
 class CandidateResumePatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resume
-        fields = ["title", "category", "file"]
+        fields = ["about_me"]
 
 
 class CandidatePersonalInfoPostSerializer(serializers.ModelSerializer):

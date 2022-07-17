@@ -35,7 +35,7 @@ class AnnouncementFilter(rest_framework.FilterSet):
         queryset = queryset.filter(Q(category__name__icontains=value) |
                                    Q(category__fa_name__icontains=value) |
                                    Q(title__icontains=value) |
-                                   Q(skill__name__icontains=value)).distinct()
+                                   Q(description__icontains=value)).distinct()
         return queryset
 
     class Meta:

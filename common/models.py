@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 # Create your models here.
-from costant.constant import CATEGORY
+from constant.views import CATEGORY
 
 User = get_user_model()
 

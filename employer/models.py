@@ -7,16 +7,18 @@ from django.db import models
 # Create your models here.
 from candidate.models import Candidate, Skill
 from common.models import (User, City, Province, Category)
-from costant.constant import (ANNOUNCEMENT_STATUS,
-                              DEGREE_OF_EDUCATIONS,
-                              TYPE_COOPERATION,
-                              MILITARY_SERVICE,
-                              APPLICANT_STATUS,
-                              GENDER, NUMBER_EMPLOYEES,
-                              )
+from constant.views import (ANNOUNCEMENT_STATUS,
+                                DEGREE_OF_EDUCATIONS,
+                                TYPE_COOPERATION,
+                                MILITARY_SERVICE,
+                                APPLICANT_STATUS,
+                                GENDER, NUMBER_EMPLOYEES, YEARS_WORK_EXPERIENCE,
+                                )
+
 
 def timestamp(date):
     return time.mktime(date.timetuple())
+
 
 class Activity(models.Model):
     name = models.CharField(max_length=500, unique=True)
@@ -102,10 +104,11 @@ class Announcement(models.Model):
     creation_date = models.DateTimeField(auto_now=True)
     creator_user = models.ForeignKey(User, related_name="announcements", related_query_name="announcement",
                                      on_delete=models.CASCADE)
-    skill = models.ManyToManyField(Skill, )
-
+    # skill = models.ManyToManyField(Skill, )
+    description=models.TextField(max_length=1000,null=True,blank=True)
     company = models.ForeignKey(Company, related_name="announcements", related_query_name="announcement",
                                 on_delete=models.CASCADE)
+    years_work_experience = models.CharField(choices=YEARS_WORK_EXPERIENCE, max_length=500, default="unlimited")
 
     def __str__(self):
         return f"id:{self.id}--name:{self.title}"

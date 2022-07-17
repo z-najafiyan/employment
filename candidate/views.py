@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rolepermissions.roles import assign_role
 
 from candidate.models import (Candidate, MarkedAnnouncement, Education, JobBenefits, JobPreference, Resume,
-                              WorkExperience, PersonalInfo)
+                              WorkExperience, PersonalInfo, Language)
 from candidate.serializers import (CandidateUserPostSerializer, CandidateAnnouncementListSerializer,
                                    CandidateAnnouncementDetailSerializer, CandidateMarkedAnnouncementPostSerializer,
                                    CandidateAnnouncementPatchSerializer,
@@ -19,7 +19,9 @@ from candidate.serializers import (CandidateUserPostSerializer, CandidateAnnounc
                                    CandidateWorkExperiencePostSerializer, CandidateWorkExperienceGetSerializer,
                                    CandidateCompanyListSerializer, CandidateCompanyDetailSerializer,
                                    CandidateSerializer, CandidateResumePatchSerializer,
-                                   CandidatePersonalInfoPostSerializer, CandidatePersonalInfoGETSerializer)
+                                   CandidatePersonalInfoPostSerializer, CandidatePersonalInfoGETSerializer,
+                                   CandidateUserSerializer, CandidateLanguagePostSerializer,
+                                   CandidateLanguageGetSerializer)
 from candidate.swagger import (swagger_kwargs)
 from common.models import Skill, User
 from employer.filters import AnnouncementFilter
@@ -77,6 +79,20 @@ class CandidateView(viewsets.ModelViewSet):
             'access': str(refresh.access_token),
         }
         return Response(res, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(**swagger_kwargs["user"])
+    @action(methods=["PATCH"], detail=False)
+    def user(self, request):
+        user = request.user
+        if "mobile" in request.data:
+            mobile = request.data.pop("mobile")
+            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+            candidate.mobile = mobile
+            candidate.save()
+        serializer = CandidateUserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(**swagger_kwargs["candidate"])
     @action(methods=["GET"], detail=False)
@@ -240,7 +256,30 @@ class CandidateView(viewsets.ModelViewSet):
             skill = FactoryGetObject.find_object(Skill, pk=pk)
             skill.delete()
             return Response({'message': "done"}, status=status.HTTP_204_NO_CONTENT)
-
+    @swagger_auto_schema(**swagger_kwargs["language_post"])
+    @swagger_auto_schema(**swagger_kwargs["language_get"])
+    @swagger_auto_schema(**swagger_kwargs["language_delete"])
+    @action(methods=["POST", "GET", "PATCH", "DELETE"], detail=True)
+    def language(self, request, pk):
+        if request.method == "POST":
+            serializer = CandidateLanguagePostSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        elif request.method == "PATCH":
+            job_benefits = FactoryGetObject.find_object(Language, pk=pk)
+            serializer = CandidateLanguagePostSerializer(data=request.data, instance=job_benefits)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        elif request.method == "GET":
+            job_preferences = FactoryGetObject.find_object(Language, pk=pk)
+            serializer = CandidateLanguageGetSerializer(job_preferences)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            language = FactoryGetObject.find_object(Language, pk=pk)
+            language.delete()
+            return Response({'message': "done"}, status=status.HTTP_204_NO_CONTENT)
     @swagger_auto_schema(**swagger_kwargs["work_experience_post"])
     @swagger_auto_schema(**swagger_kwargs["work_experience_get"])
     @swagger_auto_schema(**swagger_kwargs["work_experience_delete"])
@@ -282,7 +321,7 @@ class CandidateView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["personal_info_post"])
     @swagger_auto_schema(**swagger_kwargs["personal_info_get"])
     @swagger_auto_schema(**swagger_kwargs["personal_info_delete"])
-    @action(methods=["POST", "GET", "PATCH", "DELETE"], detail=True)
+    @action(methods=["POST", "GET", "PATCH"], detail=True)
     def personal_info(self, request, pk):
         if request.method == "POST":
             serializer = CandidatePersonalInfoPostSerializer(data=request.data)
@@ -301,10 +340,10 @@ class CandidateView(viewsets.ModelViewSet):
             personal_info = FactoryGetObject.find_object(PersonalInfo, pk=pk)
             res = CandidatePersonalInfoGETSerializer(personal_info).data
             return Response(res)
-        else:
-            personal_info = FactoryGetObject.find_object(PersonalInfo, pk=pk)
-            personal_info.delete()
-            return Response({'message': "done"}, status=status.HTTP_204_NO_CONTENT)
+        # else:
+        #     personal_info = FactoryGetObject.find_object(PersonalInfo, pk=pk)
+        #     personal_info.delete()
+        #     return Response({'message': "done"}, status=status.HTTP_204_NO_CONTENT)
 
     @swagger_auto_schema(**swagger_kwargs["announcement_list"])
     @action(methods=["GET"], detail=False)
@@ -324,6 +363,7 @@ class CandidateView(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["marked_announcement_get"])
+    @swagger_auto_schema(**swagger_kwargs["marked_announcement_post"])
     @action(methods=["GET", "POST", "DELETE"], detail=True)
     def marked_announcement(self, request, pk):
         if request.method == "GET":
