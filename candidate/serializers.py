@@ -226,7 +226,7 @@ class CandidateResumePatchSerializer(serializers.ModelSerializer):
 class CandidatePersonalInfoPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonalInfo
-        fields = [ "address", "years_birth", "gender", "about_me", "marital_status", "resumes"]
+        fields = [ "address", "years_birth", "gender", "marital_status", "resumes"]
 
 
 class CandidateCompanyListSerializer(serializers.ModelSerializer):
