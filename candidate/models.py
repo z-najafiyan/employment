@@ -111,7 +111,7 @@ class Resume(models.Model):
     work_experience = models.ManyToManyField(WorkExperience, related_name="resumes", related_query_name="resume", )
     about_me = models.TextField(max_length=20000, null=True, blank=True)
 
-    language=models.ManyToManyField(Language)
+    language=models.ManyToManyField(Language,related_name="resumes", related_query_name="resume",)
 
     def __str__(self):
         return f"id:{self.id}"
