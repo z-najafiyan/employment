@@ -132,7 +132,7 @@ class CandidateEducationGETSerializer(serializers.ModelSerializer):
 
 
 class CandidatePersonalInfoGETSerializer(serializers.ModelSerializer):
-    province = ProvinceResponseSerializer()
+    # province = ProvinceResponseSerializer()
     gender = serializers.SerializerMethodField()
     marital_status = serializers.SerializerMethodField()
 
@@ -226,7 +226,7 @@ class CandidateResumePatchSerializer(serializers.ModelSerializer):
 class CandidatePersonalInfoPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonalInfo
-        fields = ["province", "address", "years_birth", "gender", "about_me", "marital_status", "resumes"]
+        fields = [ "address", "years_birth", "gender", "about_me", "marital_status", "resumes"]
 
 
 class CandidateCompanyListSerializer(serializers.ModelSerializer):

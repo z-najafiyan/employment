@@ -177,7 +177,7 @@ class EmployerEducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EmployerPersonalInfoDetailSerializer(serializers.ModelSerializer):
-    province = ProvinceResponseSerializer()
+    # province = ProvinceResponseSerializer()
 
     class Meta:
         model = PersonalInfo
