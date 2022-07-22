@@ -240,9 +240,10 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
     company = CandidateCompanyListSerializer()
     province=ProvinceResponseSerializer()
     city=CityResponseSerializer()
+    creation_date=serializers.IntegerField(source="creation_date_ts",allow_null=True)
     class Meta:
         model = Announcement
-        fields = ["id","title", "province", "city", "type_cooperation", "minimum_salary", "company"]
+        fields = ["id","creation_date","title", "province", "city", "type_cooperation", "minimum_salary", "company"]
 
 
 class CandidateCompanyDetailSerializer(serializers.ModelSerializer):
