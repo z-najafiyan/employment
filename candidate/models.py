@@ -7,6 +7,7 @@ from constant.views import (MARITAL_STATUS, GENDER, MONTH, GRADE, MASTERY_LEVEL,
 
 
 # Create your models here.
+from employment import settings
 
 
 class Education(models.Model):
@@ -119,6 +120,11 @@ class Resume(models.Model):
     class Meta:
         ordering = ["-id"]
 
+    @property
+    def link(self, ):
+        if self.logo:
+            return f"{settings.IMAGE_URL_SERVE}{settings.MEDIA_URL}{self.file}"
+        return None
 
 class Candidate(models.Model):
     user = models.ForeignKey(User, related_name="candidates", related_query_name="candidate", on_delete=models.CASCADE)

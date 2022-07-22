@@ -36,11 +36,14 @@ class CandidateUserSingInSerializer(serializers.ModelSerializer):
         model = User
         fields = ["email", "password"]
 
+
 class CandidateUserSerializer(serializers.ModelSerializer):
     mobile = serializers.CharField(max_length=11, allow_null=True, )
+
     class Meta:
-        model=User
+        model = User
         fields = ["email", "mobile"]
+
 
 class CandidateSerializer(serializers.ModelSerializer):
     user = UserResponseSerializer()
@@ -68,20 +71,28 @@ class CandidateJobPreferencePostSerializer(serializers.ModelSerializer):
         model = JobPreference
         fields = ["resumes", "province", "type_cooperation", "mastery_level", "minimum_salary", "degree_of_educations",
                   "job_benefits", "id"]
+
+
 class CandidateLanguagePostSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Language
-        fields=["id","name","mastery_level","resumes"]
+        model = Language
+        fields = ["id", "name", "mastery_level", "resumes"]
+
+
 class CandidateLanguageGetSerializer(serializers.ModelSerializer):
-    mastery_level=serializers.SerializerMethodField()
+    mastery_level = serializers.SerializerMethodField()
+
     class Meta:
-        model=Language
-        fields=["id","name","mastery_level"]
+        model = Language
+        fields = ["id", "name", "mastery_level"]
+
     def get_mastery_level(self, obj):
         if obj.mastery_level:
             return {"en_name": obj.mastery_level,
                     "fa_name": obj.get_mastery_level_display()}
         return None
+
+
 class CandidateJobPreferenceGetSerializer(serializers.ModelSerializer):
     province = ProvinceResponseSerializer()
     job_benefits = JobBenefitsResponseSerializer(many=True)
@@ -196,12 +207,12 @@ class CandidateWorkExperiencePostSerializer(serializers.ModelSerializer):
 
 class CandidateResumeGETSerializer(serializers.ModelSerializer):
     category = CategoryResponseSerializer()
-    file = serializers.SerializerMethodField()
     education = CandidateEducationGETSerializer(many=True)
     personal_info = CandidatePersonalInfoGETSerializer()
     skill = CandidateSkillSerializer(many=True)
     job_preferences = CandidateJobPreferenceGetSerializer()
     work_experience = CandidateWorkExperienceGetSerializer(many=True)
+    file = serializers.CharField(source="link", allow_null=True)
 
     class Meta:
         model = Resume
@@ -227,30 +238,33 @@ class CandidateResumePatchSerializer(serializers.ModelSerializer):
 class CandidatePersonalInfoPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonalInfo
-        fields = [ "address", "years_birth", "gender", "marital_status", "resumes"]
+        fields = ["address", "years_birth", "gender", "marital_status", "resumes"]
 
 
 class CandidateCompanyListSerializer(serializers.ModelSerializer):
+    logo = serializers.CharField(source="link", allow_null=True)
+
     class Meta:
         model = Company
-        fields = ["id",'persian_name', "english_name", "logo", "activity"]
+        fields = ["id", 'persian_name', "english_name", "logo", "activity"]
 
 
 class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
     company = CandidateCompanyListSerializer()
-    province=ProvinceResponseSerializer()
-    city=CityResponseSerializer()
-    creation_date=serializers.IntegerField(source="creation_date_ts",allow_null=True)
+    province = ProvinceResponseSerializer()
+    city = CityResponseSerializer()
+    creation_date = serializers.IntegerField(source="creation_date_ts", allow_null=True)
     type_cooperation = serializers.SerializerMethodField()
+
     class Meta:
         model = Announcement
-        fields = ["id","creation_date","title", "province", "city", "type_cooperation", "minimum_salary", "company"]
+        fields = ["id", "creation_date", "title", "province", "city", "type_cooperation", "minimum_salary", "company"]
+
     def get_type_cooperation(self, obj):
         if obj.type_cooperation:
             return {"en_name": obj.type_cooperation,
                     "fa_name": obj.get_type_cooperation_display()}
         return None
-
 
 
 class CandidateCompanyDetailSerializer(serializers.ModelSerializer):

@@ -218,7 +218,7 @@ class EmployerResumeDetailSerializer(serializers.ModelSerializer):
     skill = EmployerSkillDetailSerializer(many=True)
     job_preferences = EmployerJobPreferencesDetailSerializer()
     work_experience = EmployerWorkExperienceDetailSerializer(many=True)
-
+    file=serializers.CharField(source="link",allow_null=True)
     class Meta:
         model = Resume
         fields = "__all__"

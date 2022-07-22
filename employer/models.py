@@ -8,12 +8,13 @@ from django.db import models
 from candidate.models import Candidate, Skill
 from common.models import (User, City, Province, Category)
 from constant.views import (ANNOUNCEMENT_STATUS,
-                                DEGREE_OF_EDUCATIONS,
-                                TYPE_COOPERATION,
-                                MILITARY_SERVICE,
-                                APPLICANT_STATUS,
-                                GENDER, NUMBER_EMPLOYEES, YEARS_WORK_EXPERIENCE,
-                                )
+                            DEGREE_OF_EDUCATIONS,
+                            TYPE_COOPERATION,
+                            MILITARY_SERVICE,
+                            APPLICANT_STATUS,
+                            GENDER, NUMBER_EMPLOYEES, YEARS_WORK_EXPERIENCE,
+                            )
+from employment import settings
 
 
 def timestamp(date):
@@ -52,6 +53,12 @@ class Company(models.Model):
 
     class Meta:
         ordering = ["-id"]
+
+    @property
+    def link(self, ):
+        if self.logo:
+            return f"{settings.IMAGE_URL_SERVE}{settings.MEDIA_URL}{self.logo}"
+        return None
 
 
 class Employer(models.Model):
@@ -105,7 +112,7 @@ class Announcement(models.Model):
     creator_user = models.ForeignKey(User, related_name="announcements", related_query_name="announcement",
                                      on_delete=models.CASCADE)
     # skill = models.ManyToManyField(Skill, )
-    description=models.TextField(max_length=1000,null=True,blank=True)
+    description = models.TextField(max_length=1000, null=True, blank=True)
     company = models.ForeignKey(Company, related_name="announcements", related_query_name="announcement",
                                 on_delete=models.CASCADE)
     years_work_experience = models.CharField(choices=YEARS_WORK_EXPERIENCE, max_length=500, default="unlimited")
