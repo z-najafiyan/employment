@@ -242,7 +242,6 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
     city=CityResponseSerializer()
     creation_date=serializers.IntegerField(source="creation_date_ts",allow_null=True)
     type_cooperation = serializers.SerializerMethodField()
-    minimum_salary=serializers.SerializerMethodField()
     class Meta:
         model = Announcement
         fields = ["id","creation_date","title", "province", "city", "type_cooperation", "minimum_salary", "company"]
@@ -252,11 +251,7 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
                     "fa_name": obj.get_type_cooperation_display()}
         return None
 
-    def get_minimum_salary(self, obj):
-        if obj.minimum_salary:
-            return {"en_name": obj.minimum_salary,
-                    "fa_name": obj.get_minimum_salary_display()}
-        return None
+
 
 class CandidateCompanyDetailSerializer(serializers.ModelSerializer):
     class Meta:
