@@ -348,7 +348,7 @@ class CandidateView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["announcement_list"])
     @action(methods=["GET"], detail=False)
     def announcement_list(self, request):
-        query_params = request.query_params()
+        query_params = request.query_params
         announcement = Announcement.objects.all()
         data = AnnouncementFilter(queryset=announcement, data=query_params).qs
         page = self.paginate_queryset(data)
