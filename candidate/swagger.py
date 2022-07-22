@@ -13,6 +13,8 @@ from candidate.serializers import (CandidateAnnouncementDetailSerializer, Candid
 from other_files.response_serialzer import UserTokenSwaggerSerializer
 
 state_param = openapi.Parameter('state', openapi.IN_QUERY, description="state manual param", type=openapi.TYPE_STRING)
+several_variable = openapi.Parameter('several_variable', openapi.IN_QUERY, description="several_variable manual param", type=openapi.TYPE_STRING)
+province = openapi.Parameter('province', openapi.IN_QUERY, description="province manual param", type=openapi.TYPE_STRING)
 
 swagger_kwargs = {
     "sing_up": {
@@ -87,6 +89,8 @@ swagger_kwargs = {
         "method": "DELETE",
     },
     "announcement_list": {"method": "GET",
+                          "manual_parameters": [several_variable],
+
                           "responses": {200: CandidateAnnouncementListSerializer()}},
     "announcement_detail": {"method": "GET",
                             "responses": {200: CandidateAnnouncementDetailSerializer()}},

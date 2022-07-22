@@ -19,21 +19,21 @@ class AnnouncementFilter(rest_framework.FilterSet):
     active_time = rest_framework.CharFilter(lookup_expr="icontains")
     several_variable = rest_framework.CharFilter(method="several_variable_filter")
 
-    def category_filter(self, queryset, value, name):
+    def category_filter(self, queryset, name, value, ):
         return queryset.filter(category_id=value)
 
-    def province_filter(self, queryset, value, name):
+    def province_filter(self, queryset, name, value):
         return queryset.filter(province_id=value)
 
-    def city_filter(self, queryset, value, name):
+    def city_filter(self, queryset, name, value):
         return queryset.filter(city_id=value)
 
-    def applicant_filter(self, queryset, value, name):
+    def applicant_filter(self, queryset, name, value):
         return queryset.filter(applicant_id=value)
 
-    def several_variable_filter(self, queryset, value, name):
+    def several_variable_filter(self, queryset, name, value, ):
         queryset = queryset.filter(Q(category__name__icontains=value) |
-                                   Q(category__fa_name__icontains=value) |
+                                   Q(category__name__icontains=value) |
                                    Q(title__icontains=value) |
                                    Q(description__icontains=value)).distinct()
         return queryset
@@ -41,7 +41,7 @@ class AnnouncementFilter(rest_framework.FilterSet):
     class Meta:
         model = Announcement
         fields = ["title", "category", "province", "city", "type_cooperation", "minimum_salary", "degree_of_educations",
-                  "gender", "military_service", "applicant", "status_name", "active_time","several_variable"]
+                  "gender", "military_service", "applicant", "status_name", "active_time", "several_variable"]
 
 
 class ApplicantFilter(rest_framework.FilterSet):
@@ -49,10 +49,10 @@ class ApplicantFilter(rest_framework.FilterSet):
     gender = rest_framework.CharFilter(method="gender_filter")
     province = rest_framework.CharFilter(method="province_filter")
 
-    def gender_filter(self, queryset, value, name):
+    def gender_filter(self, queryset, name,value):
         return queryset.filter(candidate__resume__personal_info__gender=value)
 
-    def province_filter(self, queryset, value, name):
+    def province_filter(self, queryset,name, value, ):
         return queryset.filter(candidate__resume__personal_info__province_id=value)
 
     class Meta:
