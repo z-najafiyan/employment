@@ -6,7 +6,8 @@ from candidate.models import (MarkedAnnouncement, Education, JobPreference, Resu
 from common.models import (User, Skill)
 from employer.models import (Announcement, Company, Applicant)
 from other_files.response_serialzer import (ProvinceResponseSerializer, JobBenefitsResponseSerializer,
-                                            UserResponseSerializer, CategoryResponseSerializer, )
+                                            UserResponseSerializer, CategoryResponseSerializer,
+                                            CityResponseSerializer, )
 
 
 class CandidateUserPostSerializer(serializers.ModelSerializer):
@@ -232,15 +233,16 @@ class CandidatePersonalInfoPostSerializer(serializers.ModelSerializer):
 class CandidateCompanyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['persian_name', "english_name", "logo", "activity"]
+        fields = ["id",'persian_name', "english_name", "logo", "activity"]
 
 
 class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
     company = CandidateCompanyListSerializer()
-
+    province=ProvinceResponseSerializer()
+    city=CityResponseSerializer()
     class Meta:
         model = Announcement
-        fields = ["title", "province", "city", "type_cooperation", "minimum_salary", "company"]
+        fields = ["id","title", "province", "city", "type_cooperation", "minimum_salary", "company"]
 
 
 class CandidateCompanyDetailSerializer(serializers.ModelSerializer):
