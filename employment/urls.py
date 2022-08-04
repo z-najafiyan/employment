@@ -20,6 +20,7 @@ from django.urls import path, re_path, include
 from rest_framework import routers, permissions
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+
 from candidate.views import CandidateView
 from common.views import CommonView
 from constant.views import ConstantView
