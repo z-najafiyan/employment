@@ -143,7 +143,7 @@ class EmployerApplicantGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Applicant
-        fields = ["applicant_status", "candidate", "created_date_time","id"]
+        fields = ["applicant_status", "candidate", "created_date_time", "id"]
 
     def get_applicant_status(self, obj):
         if obj.applicant_status:
@@ -198,7 +198,8 @@ class EmployerJobBenefitsDetailSerializer(serializers.ModelSerializer):
 
 class EmployerJobPreferencesDetailSerializer(serializers.ModelSerializer):
     province = ProvinceResponseSerializer()
-    job_benefits = EmployerJobBenefitsDetailSerializer(many=True)
+
+    # job_benefits = EmployerJobBenefitsDetailSerializer(many=True)
 
     class Meta:
         model = JobPreference
@@ -206,6 +207,9 @@ class EmployerJobPreferencesDetailSerializer(serializers.ModelSerializer):
 
 
 class EmployerWorkExperienceDetailSerializer(serializers.ModelSerializer):
+    start_date = serializers.IntegerField(source="start_date_ts", default=None)
+    end_date = serializers.IntegerField(source="end_date_ts", default=None)
+
     class Meta:
         model = WorkExperience
         fields = "__all__"
@@ -218,7 +222,8 @@ class EmployerResumeDetailSerializer(serializers.ModelSerializer):
     skill = EmployerSkillDetailSerializer(many=True)
     job_preferences = EmployerJobPreferencesDetailSerializer()
     work_experience = EmployerWorkExperienceDetailSerializer(many=True)
-    file=serializers.CharField(source="link",allow_null=True)
+    file = serializers.CharField(source="link", allow_null=True)
+
     class Meta:
         model = Resume
         fields = "__all__"
