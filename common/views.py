@@ -23,7 +23,7 @@ class CommonView(viewsets.ModelViewSet):
     @action(methods=["get"], detail=False)
     def province(self,request):
         instances=Province.objects.all()
-        serializer=ProvinceResponseSerializer(instances)
+        serializer=ProvinceResponseSerializer(instances,many=True)
         return Response(serializer.data,)
 
     @action(methods=["get"], detail=False)
