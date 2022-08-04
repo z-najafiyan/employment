@@ -10,6 +10,7 @@ from other_files.response_serialzer import ProvinceResponseSerializer, CityRespo
 
 
 class CommonView(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     @action(methods=["post"], detail=False)
     def create_data(self, request):
         data = pd.read_excel(r'other_files/province_list.xlsx')

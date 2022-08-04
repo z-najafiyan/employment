@@ -32,13 +32,14 @@ from other_files.permissions import IsCandidate
 
 
 class CandidateView(viewsets.ModelViewSet):
-    def get_permissions(self):
-        if self.action in ["sing_up", "sing_in", "announcement_list", "new_announcement"]:
-            self.permission_classes = [AllowAny]
-        else:
-            self.permission_classes = [IsAuthenticated, IsCandidate]
-
-        return super(CandidateView, self).get_permissions()
+    permission_classes = [AllowAny]
+    # def get_permissions(self):
+        # if self.action in ["sing_up", "sing_in", "announcement_list", "new_announcement"]:
+        #     self.permission_classes = [AllowAny]
+        # else:
+        #     self.permission_classes = [IsAuthenticated, IsCandidate]
+        #
+        # return super(CandidateView, self).get_permissions()
 
     @swagger_auto_schema(**swagger_kwargs["sing_up"])
     @action(methods=["POST"], detail=False)
