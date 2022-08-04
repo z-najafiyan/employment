@@ -27,8 +27,8 @@ class LanguageAdmin(admin.ModelAdmin):
 
 @admin.register(WorkExperience)
 class WorkExperienceAdmin(admin.ModelAdmin):
-    list_display = ["id", "job_title", "company_name", "start_years", "end_years"]
-    list_display_links = ["id", "job_title", "company_name", "start_years", "end_years"]
+    list_display = ["id", "job_title", "company_name", "start_date", "end_date"]
+    list_display_links = ["id", "job_title", "company_name", "start_date", "end_date"]
     search_fields = ["id", "job_title", "company_name"]
 
 

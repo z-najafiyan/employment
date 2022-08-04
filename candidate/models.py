@@ -1,21 +1,25 @@
-from django.core.validators import RegexValidator
+import time
+
 from django.db import models
 
 from common.models import (User, Province, Category, Skill)
-from constant.views import (MARITAL_STATUS, GENDER, MONTH, GRADE, MASTERY_LEVEL, LANGUAGE_NAME, TYPE_COOPERATION,
-                            DEGREE_OF_EDUCATIONS, LEVEL, SALARY, JOB_BENEFITS)
-
-
+from constant.views import (MARITAL_STATUS, GENDER, GRADE, MASTERY_LEVEL, LANGUAGE_NAME, TYPE_COOPERATION,
+                            DEGREE_OF_EDUCATIONS, LEVEL, SALARY, JOB_BENEFITS, MILITARY_SERVICE)
 # Create your models here.
+
 from employment import settings
 
 
+def timestamp(date):
+    return time.mktime(date.timetuple())
 class Education(models.Model):
     field_of_study = models.CharField(max_length=500, )
     name_university = models.CharField(max_length=500)
     grade = models.CharField(max_length=100, choices=GRADE)
-    start_years = models.CharField(max_length=4)
-    end_years = models.CharField(max_length=4)
+    # start_years = models.CharField(max_length=4)
+    # end_years = models.CharField(max_length=4)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
     is_student = models.BooleanField()
     description = models.CharField(max_length=2000)
 
@@ -25,7 +29,16 @@ class Education(models.Model):
     class Meta:
         ordering = ["-id"]
 
-
+    @property
+    def start_date_ts(self):
+        if self.start_date:
+            return timestamp(self.start_date) * 1000
+        return None
+    @property
+    def end_date_ts(self):
+        if self.end_date:
+            return timestamp(self.end_date) * 1000
+        return None
 class Language(models.Model):
     name = models.CharField(choices=LANGUAGE_NAME, max_length=20)
     mastery_level = models.CharField(choices=MASTERY_LEVEL, max_length=20)
@@ -40,11 +53,13 @@ class Language(models.Model):
 class WorkExperience(models.Model):
     job_title = models.CharField(max_length=500, )
     company_name = models.CharField(max_length=1000)
-    start_month = models.CharField(max_length=2, choices=MONTH)
-    start_years = models.CharField(max_length=4, validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
-    end_month = models.CharField(max_length=2, choices=MONTH,)
-    end_years = models.CharField(max_length=4, null=True, blank=True,
-                                 validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
+    # start_month = models.CharField(max_length=2, choices=MONTH)
+    # start_years = models.CharField(max_length=4, validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
+    # end_month = models.CharField(max_length=2, choices=MONTH,)
+    # end_years = models.CharField(max_length=4, null=True, blank=True,
+    #                              validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
     is_employed = models.BooleanField()
     description = models.CharField(max_length=2000)
 
@@ -53,16 +68,28 @@ class WorkExperience(models.Model):
 
     class Meta:
         ordering = ["-id"]
-
-
+    @property
+    def start_date_ts(self):
+        if self.start_date:
+            return timestamp(self.start_date) * 1000
+        return None
+    @property
+    def end_date_ts(self):
+        if self.end_date:
+            return timestamp(self.end_date) * 1000
+        return None
 class PersonalInfo(models.Model):
     # province = models.ForeignKey(Province, null=True, blank=True, related_name="personal_infos",
     #                              related_query_name="personal_info", on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name="personal_infos", related_query_name="personal_info",
+                                 on_delete=models.CASCADE, null=True, blank=True
+                                 )
     full_name = models.CharField(max_length=200, null=True, blank=True)
     address = models.TextField(max_length=20000, null=True, )
     years_birth = models.CharField(max_length=4, )
     gender = models.CharField(choices=GENDER, max_length=500, null=True, blank=True)
     marital_status = models.CharField(choices=MARITAL_STATUS, max_length=1000, null=True, blank=True)
+    military_status = models.CharField(choices=MILITARY_SERVICE, max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return f"id{self.id}"
@@ -88,7 +115,20 @@ class JobPreference(models.Model):
     mastery_level = models.CharField(choices=LEVEL, max_length=500, null=True, blank=True)
     minimum_salary = models.CharField(max_length=500, choices=SALARY, null=True, blank=True)
     degree_of_educations = models.CharField(choices=DEGREE_OF_EDUCATIONS, max_length=500, null=True, blank=True)
-    job_benefits = models.ManyToManyField(JobBenefits)
+
+    # job_benefits = models.ManyToManyField(JobBenefits)
+
+    def __str__(self):
+        return f"id{self.id}"
+
+    class Meta:
+        ordering = ["-id"]
+
+
+class ProfessionalSkill(models.Model):
+    skill = models.ForeignKey(Skill, related_name="professional_skills", related_query_name="professional_skill",
+                              on_delete=models.CASCADE)
+    mastery_level = models.CharField(choices=LEVEL, max_length=500, null=True, blank=True)
 
     def __str__(self):
         return f"id{self.id}"
@@ -98,15 +138,11 @@ class JobPreference(models.Model):
 
 
 class Resume(models.Model):
-    title = models.CharField(max_length=500, null=True, blank=True)
-    category = models.ForeignKey(Category, related_name="resumes", related_query_name="resume",
-                                 on_delete=models.CASCADE, null=True, blank=True
-                                 )
     file = models.FileField(upload_to='', blank=True, null=True)
     education = models.ManyToManyField(Education, related_name="resumes", related_query_name="resume", )
     personal_info = models.ForeignKey(PersonalInfo, related_name="resumes", related_query_name="resume",
                                       on_delete=models.CASCADE, null=True, blank=True)
-    skill = models.ManyToManyField(Skill, related_name="resumes", related_query_name="resume")
+    professional_skill = models.ManyToManyField(ProfessionalSkill, related_name="resumes", related_query_name="resume")
     job_preferences = models.ForeignKey(JobPreference, related_name="resumes", related_query_name="resume",
                                         on_delete=models.CASCADE, null=True, blank=True)
     work_experience = models.ManyToManyField(WorkExperience, related_name="resumes", related_query_name="resume", )
@@ -125,6 +161,7 @@ class Resume(models.Model):
         if self.logo:
             return f"{settings.IMAGE_URL_SERVE}{settings.MEDIA_URL}{self.file}"
         return None
+
 
 class Candidate(models.Model):
     user = models.ForeignKey(User, related_name="candidates", related_query_name="candidate", on_delete=models.CASCADE)
