@@ -21,7 +21,8 @@ from candidate.serializers import (CandidateUserPostSerializer, CandidateAnnounc
                                    CandidateSerializer, CandidateResumePatchSerializer,
                                    CandidatePersonalInfoPostSerializer, CandidatePersonalInfoGETSerializer,
                                    CandidateUserSerializer, CandidateLanguagePostSerializer,
-                                   CandidateLanguageGetSerializer)
+                                   CandidateLanguageGetSerializer, CandidateProfessionalSkillSerializer,
+                                   CandidateApplicantCreateSerializer)
 from candidate.swagger import (swagger_kwargs)
 from common.models import Skill, User
 from employer.filters import AnnouncementFilter
@@ -127,10 +128,10 @@ class CandidateView(viewsets.ModelViewSet):
         if request.method == "POST":
             """
             Create education for candidate resume
-                :params request: {"field_of_study", "name_university", "grade", "start_years", "end_years", 
+                :params request: {"field_of_study", "name_university", "grade", "start_date","end_date" 
                                   "is_student","description", "resumes"}
                 :param pk:0
-                :return:{"id","field_of_study", "name_university", "grade", "start_years", "end_years", 
+                :return:{"id","field_of_study", "name_university", "grade", "start_date","end_date", 
                          "is_student","description", "resumes"}
             """
 
@@ -141,10 +142,10 @@ class CandidateView(viewsets.ModelViewSet):
         elif request.method == "PATCH":
             """
                  Update education for candidate resume
-                     :params request: {"field_of_study", "name_university", "grade", "start_years", "end_years", 
+                     :params request: {"field_of_study", "name_university", "grade","start_date","end_date", 
                                        "is_student","description"}
                      :param pk: id education
-                     :return:{"id","field_of_study", "name_university", "grade", "start_years", "end_years", 
+                     :return:{"id","field_of_study", "name_university", "grade", "start_date","end_date", 
                               "is_student","description", "resumes"}
             """
 
@@ -157,7 +158,7 @@ class CandidateView(viewsets.ModelViewSet):
             """
              detail and list education for candidate resume
                  :param pk: id education
-                 :return:{"id","field_of_study", "name_university", "grade", "start_years", "end_years", 
+                 :return:{"id","field_of_study", "name_university", "grade", "start_date","end_date" 
                           "is_student","description", "resumes"}
                 :query params: state params
             """
@@ -183,7 +184,7 @@ class CandidateView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["skill_get"])
     @swagger_auto_schema(**swagger_kwargs["skill_delete"])
     @action(methods=["POST", "GET", "PATCH", "DELETE"], detail=True)
-    def skill(self, request, pk):
+    def professional_skills(self, request, pk):
         if request.method == "POST":
             """
             Create skill for candidate resume
@@ -191,7 +192,7 @@ class CandidateView(viewsets.ModelViewSet):
                 :param pk:0
                 :return:{"id","name" ,"resumes"}
             """
-            serializer = CandidateSkillSerializer(data=request.data)
+            serializer = CandidateProfessionalSkillSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -408,14 +409,16 @@ class CandidateView(viewsets.ModelViewSet):
         response = CandidateAnnouncementListSerializer(announcement, many=True).data
         return Response(response, status=status.HTTP_200_OK)
 
-    # @swagger_auto_schema(**swagger_kwargs[""])
-    @action(methods=["patch"], detail=False)
+    @swagger_auto_schema(**swagger_kwargs["send_resume"])
+    @action(methods=["patch"], detail=True)
     def send_resume(self, request, pk):
         announcement = FactoryGetObject.find_object(Announcement, pk=pk)
-        serializer = CandidateAnnouncementPatchSerializer(announcement, data=request.data)
+        serializer = CandidateApplicantCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        instance=serializer.save()
+        announcement.applicant.add(instance)
+        announcement.save()
+        return Response({'message':"ok"}, status=status.HTTP_201_CREATED)
 
     @action(methods=["GET"], detail=False)
     def company(self, request, pk):
@@ -431,3 +434,8 @@ class CandidateView(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             return Response({"message": "state is not define"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=["GET"], detail=False)
+    def resume_quality(self):
+        pass
+

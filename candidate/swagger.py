@@ -9,7 +9,8 @@ from candidate.serializers import (CandidateAnnouncementDetailSerializer, Candid
                                    CandidateSerializer, CandidatePersonalInfoPostSerializer,
                                    CandidatePersonalInfoGETSerializer, CandidateResumePatchSerializer,
                                    CandidateUserSingInSerializer, CandidateUserSerializer,
-                                   CandidateLanguagePostSerializer, CandidateLanguageGetSerializer)
+                                   CandidateLanguagePostSerializer, CandidateLanguageGetSerializer,
+                                   CandidateAnnouncementPatchSerializer, CandidateApplicantCreateSerializer)
 from other_files.response_serialzer import UserTokenSwaggerSerializer
 
 state_param = openapi.Parameter('state', openapi.IN_QUERY, description="state manual param", type=openapi.TYPE_STRING)
@@ -89,7 +90,7 @@ swagger_kwargs = {
         "method": "DELETE",
     },
     "announcement_list": {"method": "GET",
-                          "manual_parameters": [several_variable],
+                          "manual_parameters": [several_variable,province],
 
                           "responses": {200: CandidateAnnouncementListSerializer()}},
     "announcement_detail": {"method": "GET",
@@ -120,6 +121,9 @@ swagger_kwargs = {
     "my_announcements": {
         "method": "GET",
         "responses": {200: CandidateAnnouncementListSerializer()}},
+    "send_resume": {"method": "PATCH",
+             "request_body": CandidateApplicantCreateSerializer,
+             },
 
 }
 

@@ -2,12 +2,12 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from candidate.models import (MarkedAnnouncement, Education, JobPreference, Resume, WorkExperience, PersonalInfo,
-                              Candidate, Language)
+                              Candidate, Language, ProfessionalSkill)
 from common.models import (User, Skill)
 from employer.models import (Announcement, Company, Applicant)
 from other_files.response_serialzer import (ProvinceResponseSerializer, JobBenefitsResponseSerializer,
                                             UserResponseSerializer, CategoryResponseSerializer,
-                                            CityResponseSerializer, )
+                                            CityResponseSerializer, ActivityResponseSerializer, )
 
 
 class CandidateUserPostSerializer(serializers.ModelSerializer):
@@ -56,21 +56,23 @@ class CandidateSerializer(serializers.ModelSerializer):
 class CandidateEducationPOSTSerializer(serializers.ModelSerializer):
     class Meta:
         model = Education
-        fields = ["id", "field_of_study", "name_university", "grade", "start_years", "end_years", "is_student",
+        fields = ["id", "field_of_study", "name_university", "grade", "start_date", "end_date", "is_student",
                   "description", "resumes"]
 
 
-class CandidateSkillSerializer(serializers.ModelSerializer):
+class CandidateProfessionalSkillSerializer(serializers.ModelSerializer):
+    skill = serializers.CharField(max_length=200)
+
     class Meta:
-        model = Skill
-        fields = ["id", "name", "resumes"]
+        model = ProfessionalSkill
+        fields = ["id", "skill", "mastery_level", "resumes"]
 
 
 class CandidateJobPreferencePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobPreference
         fields = ["resumes", "province", "type_cooperation", "mastery_level", "minimum_salary", "degree_of_educations",
-                  "job_benefits", "id"]
+                  "id"]
 
 
 class CandidateLanguagePostSerializer(serializers.ModelSerializer):
@@ -95,7 +97,7 @@ class CandidateLanguageGetSerializer(serializers.ModelSerializer):
 
 class CandidateJobPreferenceGetSerializer(serializers.ModelSerializer):
     province = ProvinceResponseSerializer()
-    job_benefits = JobBenefitsResponseSerializer(many=True)
+    # job_benefits = JobBenefitsResponseSerializer(many=True)
     type_cooperation = serializers.SerializerMethodField()
     mastery_level = serializers.SerializerMethodField()
     minimum_salary = serializers.SerializerMethodField()
@@ -132,10 +134,12 @@ class CandidateJobPreferenceGetSerializer(serializers.ModelSerializer):
 
 class CandidateEducationGETSerializer(serializers.ModelSerializer):
     grade = serializers.SerializerMethodField()
+    start_date = serializers.IntegerField(source="start_date_ts", default=None)
+    end_date = serializers.IntegerField(source="end_date_ts", default=None)
 
     class Meta:
         model = Education
-        fields = ["id", "field_of_study", "name_university", "grade", "start_years", "end_years", "is_student",
+        fields = ["id", "field_of_study", "name_university", "grade", "start_date", "end_date", "is_student",
                   "description", ]
 
     def get_grade(self, obj):
@@ -166,30 +170,18 @@ class CandidatePersonalInfoGETSerializer(serializers.ModelSerializer):
 
 
 class CandidateWorkExperienceGetSerializer(serializers.ModelSerializer):
-    start_month = serializers.SerializerMethodField()
-    end_month = serializers.SerializerMethodField()
+    start_date = serializers.IntegerField(source="start_date_ts", default=None)
+    end_date = serializers.IntegerField(source="end_date_ts", default=None)
 
     class Meta:
         model = WorkExperience
         fields = "__all__"
 
-    def get_start_month(self, obj):
-        if obj.start_month:
-            return {"en_name": obj.start_month,
-                    "fa_name": obj.get_start_month_display()}
-        return None
-
-    def get_end_month(self, obj):
-        if obj.end_month:
-            return {"en_name": obj.end_month,
-                    "fa_name": obj.get_end_month_display()}
-        return None
-
 
 class CandidateWorkExperiencePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkExperience
-        fields = ["id", "resumes", "job_title", "company_name", "start_month", "start_years", "end_month", "end_years",
+        fields = ["id", "resumes", "job_title", "company_name", "start_date", "end_date",
                   "is_employed", "description"]
 
     def validate_end_month(self, value):
@@ -203,6 +195,12 @@ class CandidateWorkExperiencePostSerializer(serializers.ModelSerializer):
             if not value:
                 raise serializers.ValidationError("This field may not be null")
         return value
+
+
+class CandidateSkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = "__all__"
 
 
 class CandidateResumeGETSerializer(serializers.ModelSerializer):
@@ -243,10 +241,11 @@ class CandidatePersonalInfoPostSerializer(serializers.ModelSerializer):
 
 class CandidateCompanyListSerializer(serializers.ModelSerializer):
     logo = serializers.CharField(source="link", allow_null=True)
+    activity = ActivityResponseSerializer()
 
     class Meta:
         model = Company
-        fields = ["id", 'persian_name', "english_name", "logo", "activity"]
+        fields = ["id", 'persian_name', "english_name", "logo", "activity", "description"]
 
 
 class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
@@ -275,10 +274,34 @@ class CandidateCompanyDetailSerializer(serializers.ModelSerializer):
 
 class CandidateAnnouncementDetailSerializer(serializers.ModelSerializer):
     company = CandidateCompanyListSerializer()
+    province = ProvinceResponseSerializer()
+    city = CityResponseSerializer()
+    type_cooperation = serializers.SerializerMethodField()
+    military_service = serializers.SerializerMethodField()
+    gender = serializers.SerializerMethodField()
 
     class Meta:
         model = Announcement
-        fields = ["title", "province", "city", "type_cooperation", "minimum_salary", "company"]
+        fields = ["id", "title", "province", "city", "type_cooperation", "minimum_salary", "gender",
+                  "company", "military_service", "description"]
+
+    def get_type_cooperation(self, obj):
+        if obj.type_cooperation:
+            return {"en_name": obj.type_cooperation,
+                    "fa_name": obj.get_type_cooperation_display()}
+        return None
+
+    def get_military_service(self, obj):
+        if obj.military_service:
+            return {"en_name": obj.military_service,
+                    "fa_name": obj.get_military_service_display()}
+        return None
+
+    def get_gender(self, obj):
+        if obj.gender:
+            return {"en_name": obj.gender,
+                    "fa_name": obj.get_gender_display()}
+        return None
 
 
 class CandidateMarkedAnnouncementPostSerializer(serializers.ModelSerializer):
@@ -289,7 +312,7 @@ class CandidateMarkedAnnouncementPostSerializer(serializers.ModelSerializer):
 
 class CandidateApplicantCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        models = Applicant
+        model = Applicant
         fields = ['candidate']
 
 
@@ -297,5 +320,5 @@ class CandidateAnnouncementPatchSerializer(WritableNestedModelSerializer):
     applicant = CandidateApplicantCreateSerializer()
 
     class Meta:
-        models = Announcement
+        model = Announcement
         fields = ["applicant"]
