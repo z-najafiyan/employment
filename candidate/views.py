@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rolepermissions.roles import assign_role
@@ -12,7 +12,6 @@ from candidate.models import (Candidate, MarkedAnnouncement, Education, JobBenef
                               WorkExperience, PersonalInfo, Language)
 from candidate.serializers import (CandidateUserPostSerializer, CandidateAnnouncementListSerializer,
                                    CandidateAnnouncementDetailSerializer, CandidateMarkedAnnouncementPostSerializer,
-                                   CandidateAnnouncementPatchSerializer,
                                    CandidateEducationPOSTSerializer, CandidateEducationGETSerializer,
                                    CandidateSkillSerializer, CandidateJobPreferencePostSerializer,
                                    CandidateJobPreferenceGetSerializer, CandidateResumeGETSerializer,
@@ -28,18 +27,18 @@ from common.models import Skill, User
 from employer.filters import AnnouncementFilter
 from employer.models import Announcement, Company
 from other_files.helper import FactoryGetObject
-from other_files.permissions import IsCandidate
 
 
 class CandidateView(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
+
     # def get_permissions(self):
-        # if self.action in ["sing_up", "sing_in", "announcement_list", "new_announcement"]:
-        #     self.permission_classes = [AllowAny]
-        # else:
-        #     self.permission_classes = [IsAuthenticated, IsCandidate]
-        #
-        # return super(CandidateView, self).get_permissions()
+    # if self.action in ["sing_up", "sing_in", "announcement_list", "new_announcement"]:
+    #     self.permission_classes = [AllowAny]
+    # else:
+    #     self.permission_classes = [IsAuthenticated, IsCandidate]
+    #
+    # return super(CandidateView, self).get_permissions()
 
     @swagger_auto_schema(**swagger_kwargs["sing_up"])
     @action(methods=["POST"], detail=False)
@@ -48,6 +47,11 @@ class CandidateView(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         user = serializer.save(username=serializer.validated_data["email"])
         resume = Resume.objects.create()
+        personal_info=PersonalInfo.objects.create()
+        job_preferences=JobPreference.objects.create()
+        resume.personal_info=personal_info
+        resume.job_preferences=job_preferences
+        resume.save()
         _ = Candidate.objects.create(user=user, resume=resume)
         assign_role(user, "candidate")
 
@@ -258,6 +262,7 @@ class CandidateView(viewsets.ModelViewSet):
             skill = FactoryGetObject.find_object(Skill, pk=pk)
             skill.delete()
             return Response({'message': "done"}, status=status.HTTP_204_NO_CONTENT)
+
     @swagger_auto_schema(**swagger_kwargs["language_post"])
     @swagger_auto_schema(**swagger_kwargs["language_get"])
     @swagger_auto_schema(**swagger_kwargs["language_delete"])
@@ -282,6 +287,7 @@ class CandidateView(viewsets.ModelViewSet):
             language = FactoryGetObject.find_object(Language, pk=pk)
             language.delete()
             return Response({'message': "done"}, status=status.HTTP_204_NO_CONTENT)
+
     @swagger_auto_schema(**swagger_kwargs["work_experience_post"])
     @swagger_auto_schema(**swagger_kwargs["work_experience_get"])
     @swagger_auto_schema(**swagger_kwargs["work_experience_delete"])
@@ -323,14 +329,18 @@ class CandidateView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["personal_info_post"])
     @swagger_auto_schema(**swagger_kwargs["personal_info_get"])
     @swagger_auto_schema(**swagger_kwargs["personal_info_delete"])
-    @action(methods=["POST", "GET", "PATCH"], detail=True)
+    @action(methods=["GET", "PATCH"], detail=True)
     def personal_info(self, request, pk):
-        if request.method == "POST":
-            serializer = CandidatePersonalInfoPostSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        elif request.method == "PATCH":
+        # if request.method == "POST":
+        #     serializer = CandidatePersonalInfoPostSerializer(data=request.data)
+        #     serializer.is_valid(raise_exception=True)
+        #     resume=serializer.validated_data.pop("resumes")
+        #     instance=serializer.save()
+        #     resume.personal_info=instance
+        #     resume.save()
+        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        if request.method == "PATCH":
             personal_info = FactoryGetObject.find_object(PersonalInfo, pk=pk)
             serializer = CandidatePersonalInfoPostSerializer(data=request.data, instance=personal_info,
                                                              partial=True)
@@ -416,10 +426,10 @@ class CandidateView(viewsets.ModelViewSet):
         announcement = FactoryGetObject.find_object(Announcement, pk=pk)
         serializer = CandidateApplicantCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        instance=serializer.save()
+        instance = serializer.save()
         announcement.applicant.add(instance)
         announcement.save()
-        return Response({'message':"ok"}, status=status.HTTP_201_CREATED)
+        return Response({'message': "ok"}, status=status.HTTP_201_CREATED)
 
     @action(methods=["GET"], detail=False)
     def company(self, request, pk):
@@ -439,4 +449,3 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False)
     def resume_quality(self):
         pass
-

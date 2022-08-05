@@ -68,6 +68,21 @@ class CandidateProfessionalSkillSerializer(serializers.ModelSerializer):
         fields = ["id", "skill", "mastery_level", "resumes"]
 
 
+class CandidateProfessionalSkillGetSerializer(serializers.ModelSerializer):
+    skill = serializers.CharField(max_length=200)
+    mastery_level = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProfessionalSkill
+        fields = ["id", "skill", "mastery_level", ]
+
+    def get_mastery_level(self, obj):
+        if obj.mastery_level:
+            return {"en_name": obj.mastery_level,
+                    "fa_name": obj.get_mastery_level_display()}
+        return None
+
+
 class CandidateJobPreferencePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobPreference
@@ -204,17 +219,20 @@ class CandidateSkillSerializer(serializers.ModelSerializer):
 
 
 class CandidateResumeGETSerializer(serializers.ModelSerializer):
-    category = CategoryResponseSerializer()
     education = CandidateEducationGETSerializer(many=True)
     personal_info = CandidatePersonalInfoGETSerializer()
-    skill = CandidateSkillSerializer(many=True)
+    professional_skill = CandidateProfessionalSkillGetSerializer(many=True)
     job_preferences = CandidateJobPreferenceGetSerializer()
     work_experience = CandidateWorkExperienceGetSerializer(many=True)
     file = serializers.CharField(source="link", allow_null=True)
+    email = serializers.SerializerMethodField()
+    mobile = serializers.SerializerMethodField()
 
     class Meta:
         model = Resume
-        fields = "__all__"
+        fields = ["id", "file", "education", "personal_info", "professional_skill", "job_preferences",
+                  "work_experience",
+                  "about_me", "language", "mobile", "email"]
 
     def get_category(self, obj):
         if obj.category:
@@ -222,6 +240,12 @@ class CandidateResumeGETSerializer(serializers.ModelSerializer):
                    "fa_name": obj.get_category_display()}
 
         return None
+
+    def get_mobile(self, obj):
+        return obj.candidates.mobile
+
+    def get_email(self, obj):
+        return obj.candidates.user.email
 
     def get_file(self, obj):
         return None
@@ -233,10 +257,11 @@ class CandidateResumePatchSerializer(serializers.ModelSerializer):
         fields = ["about_me"]
 
 
-class CandidatePersonalInfoPostSerializer(serializers.ModelSerializer):
+class CandidatePersonalInfoPostSerializer(WritableNestedModelSerializer):
     class Meta:
         model = PersonalInfo
-        fields = ["address", "years_birth", "gender", "marital_status", "resumes"]
+        fields = ["category", "full_name", "marital_status", "military_status", "address", "years_birth", "gender",
+                  "marital_status", ]
 
 
 class CandidateCompanyListSerializer(serializers.ModelSerializer):

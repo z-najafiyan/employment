@@ -83,7 +83,7 @@ swagger_kwargs = {
         "method": "GET",
         "responses": {200: CandidatePersonalInfoGETSerializer()}},
     "personal_info_post": {
-        "methods": ["POST", "PATCH"],
+        "method":  "PATCH",
         "request_body": CandidatePersonalInfoPostSerializer,
         "responses": {200: CandidatePersonalInfoPostSerializer()}},
     "personal_info_delete": {

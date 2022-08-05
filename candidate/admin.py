@@ -60,7 +60,7 @@ class ResumeAdmin(admin.ModelAdmin):
     search_fields = ["id", "education", "personal_info", "skill", "job_preferences", "work_experience"]
 
     def skill(self, obj):
-        return [p.id for p in obj.skill.all()]
+        return [p.id for p in obj.professional_skill.all()]
 
 
 @admin.register(Candidate)

@@ -140,15 +140,16 @@ class ProfessionalSkill(models.Model):
 class Resume(models.Model):
     file = models.FileField(upload_to='', blank=True, null=True)
     education = models.ManyToManyField(Education, related_name="resumes", related_query_name="resume", )
-    personal_info = models.ForeignKey(PersonalInfo, related_name="resumes", related_query_name="resume",
+    personal_info = models.OneToOneField(PersonalInfo, related_name="resumes", related_query_name="resume",
                                       on_delete=models.CASCADE, null=True, blank=True)
     professional_skill = models.ManyToManyField(ProfessionalSkill, related_name="resumes", related_query_name="resume")
-    job_preferences = models.ForeignKey(JobPreference, related_name="resumes", related_query_name="resume",
+    job_preferences = models.OneToOneField(JobPreference, related_name="resumes", related_query_name="resume",
                                         on_delete=models.CASCADE, null=True, blank=True)
     work_experience = models.ManyToManyField(WorkExperience, related_name="resumes", related_query_name="resume", )
     about_me = models.TextField(max_length=20000, null=True, blank=True)
 
     language = models.ManyToManyField(Language, related_name="resumes", related_query_name="resume", )
+
 
     def __str__(self):
         return f"id:{self.id}"
@@ -164,8 +165,8 @@ class Resume(models.Model):
 
 
 class Candidate(models.Model):
-    user = models.ForeignKey(User, related_name="candidates", related_query_name="candidate", on_delete=models.CASCADE)
-    resume = models.ForeignKey(Resume, related_name="candidates", related_query_name="candidate",
+    user = models.OneToOneField(User, related_name="candidates", related_query_name="candidate", on_delete=models.CASCADE)
+    resume = models.OneToOneField(Resume, related_name="candidates", related_query_name="candidate",
                                on_delete=models.CASCADE)
     mobile = models.CharField(max_length=11, null=True, blank=True)
 
