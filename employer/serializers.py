@@ -53,7 +53,7 @@ class EmployerCompanyGetSerializer(serializers.ModelSerializer):
     city = CityResponseSerializer()
     activity = ActivityResponseSerializer()
     number_employees = serializers.SerializerMethodField()
-
+    logo= serializers.CharField(source="logo",default=None)
     class Meta:
         model = Company
         fields = "__all__"
