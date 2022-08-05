@@ -146,7 +146,7 @@ ROLEPERMISSIONS_MODULE = 'other_files.roles'
 LOGIN_URL = 'rest_framework:login'
 LOGOUT_URL = 'rest_framework:logout'
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, "/var/www/employment/media")
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': 'jwt',
