@@ -274,6 +274,7 @@ class CandidateCompanyListSerializer(serializers.ModelSerializer):
 
 
 class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
+    category=CategoryResponseSerializer()
     company = CandidateCompanyListSerializer()
     province = ProvinceResponseSerializer()
     city = CityResponseSerializer()
@@ -282,7 +283,7 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Announcement
-        fields = ["id", "creation_date", "title", "province", "city", "type_cooperation", "minimum_salary", "company"]
+        fields = ["id", "category","creation_date", "title", "province", "city", "type_cooperation", "minimum_salary", "company"]
 
     def get_type_cooperation(self, obj):
         if obj.type_cooperation:
