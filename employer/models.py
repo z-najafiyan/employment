@@ -105,7 +105,7 @@ class Announcement(models.Model):
     degree_of_educations = models.CharField(choices=DEGREE_OF_EDUCATIONS, max_length=500, null=True, blank=True)
     gender = models.CharField(choices=GENDER, max_length=500, null=True, blank=True)
     military_service = models.CharField(choices=MILITARY_SERVICE, max_length=500, null=True, blank=True)
-    applicant = models.ManyToManyField("Applicant")
+    applicant = models.ManyToManyField("Applicant",blank=True)
     status_name = models.CharField(choices=ANNOUNCEMENT_STATUS, max_length=500, default="active")
     active_time = models.IntegerField(MaxValueValidator(100), default=100)
     creation_date = models.DateTimeField(auto_now=True)
