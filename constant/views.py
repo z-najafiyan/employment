@@ -35,8 +35,8 @@ CATEGORY = [
     ("designer", "Designer"),
     ("backend", "Backend developer"),
     ("frontend", "Frontend developer"),
-    ("full_stack","Full stack developer"),
-    ("manager","Manager"),
+    # ("full_stack","Full stack developer"),
+    # ("manager","Manager"),
 ]
 YEARS_WORK_EXPERIENCE=[
     ("unlimited","بدون محدودیت سابقه کار"),
