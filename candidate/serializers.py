@@ -337,7 +337,7 @@ class CandidateAnnouncementDetailSerializer(serializers.ModelSerializer):
                     "fa_name": obj.get_gender_display()}
         return None
 
-    def get_gender(self, obj):
+    def get_years_work_experience(self, obj):
         if obj.years_work_experience:
             return {"en_name": obj.years_work_experience,
                     "fa_name": obj.get_years_work_experience_display()}
