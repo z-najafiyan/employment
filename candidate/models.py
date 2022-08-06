@@ -169,7 +169,7 @@ class Candidate(models.Model):
     resume = models.OneToOneField(Resume, related_name="candidates", related_query_name="candidate",
                                on_delete=models.CASCADE)
     mobile = models.CharField(max_length=11, null=True, blank=True)
-    email = models.CharField(max_length=100, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
 
 
     def __str__(self):
