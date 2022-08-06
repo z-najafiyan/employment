@@ -233,7 +233,7 @@ class CandidateResumeGETSerializer(serializers.ModelSerializer):
     file = serializers.CharField(source="link", allow_null=True)
     email = serializers.SerializerMethodField()
     mobile = serializers.SerializerMethodField()
-    language = CandidateLanguageGetSerializer()
+    language = CandidateLanguageGetSerializer(many=True)
 
     class Meta:
         model = Resume
