@@ -19,9 +19,9 @@ from candidate.serializers import (CandidateUserPostSerializer, CandidateAnnounc
                                    CandidateCompanyListSerializer, CandidateCompanyDetailSerializer,
                                    CandidateSerializer, CandidateResumePatchSerializer,
                                    CandidatePersonalInfoPostSerializer, CandidatePersonalInfoGETSerializer,
-                                   CandidateUserSerializer, CandidateLanguagePostSerializer,
+                                   CandidateLanguagePostSerializer,
                                    CandidateLanguageGetSerializer, CandidateProfessionalSkillSerializer,
-                                   CandidateApplicantCreateSerializer)
+                                   CandidateApplicantCreateSerializer, CandidatePatchSerializer)
 from candidate.swagger import (swagger_kwargs)
 from common.models import Skill, User
 from employer.filters import AnnouncementFilter
@@ -90,12 +90,8 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["PATCH"], detail=False)
     def user(self, request):
         user = request.user
-        if "mobile" in request.data:
-            mobile = request.data.pop("mobile")
-            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
-            candidate.mobile = mobile
-            candidate.save()
-        serializer = CandidateUserSerializer(user, data=request.data, partial=True)
+        candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+        serializer = CandidatePatchSerializer(candidate, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)

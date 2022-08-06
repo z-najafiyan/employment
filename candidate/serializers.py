@@ -37,12 +37,12 @@ class CandidateUserSingInSerializer(serializers.ModelSerializer):
         fields = ["email", "password"]
 
 
-class CandidateUserSerializer(serializers.ModelSerializer):
-    mobile = serializers.CharField(max_length=11, allow_null=True, )
-
-    class Meta:
-        model = User
-        fields = ["email", "mobile"]
+# class CandidateUserSerializer(serializers.ModelSerializer):
+#     mobile = serializers.CharField(max_length=11, allow_null=True, )
+#
+#     class Meta:
+#         model = User
+#         fields = ["email", "mobile"]
 
 
 class CandidateSerializer(serializers.ModelSerializer):
@@ -51,6 +51,12 @@ class CandidateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Candidate
         fields = ["user", "resume"]
+
+
+class CandidatePatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Candidate
+        fields = ["mobile", "email"]
 
 
 class CandidateEducationPOSTSerializer(serializers.ModelSerializer):
@@ -245,7 +251,7 @@ class CandidateResumeGETSerializer(serializers.ModelSerializer):
         return obj.candidates.mobile
 
     def get_email(self, obj):
-        return obj.candidates.user.email
+        return obj.candidates.email
 
     def get_file(self, obj):
         return None
@@ -274,7 +280,7 @@ class CandidateCompanyListSerializer(serializers.ModelSerializer):
 
 
 class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
-    category=CategoryResponseSerializer()
+    category = CategoryResponseSerializer()
     company = CandidateCompanyListSerializer()
     province = ProvinceResponseSerializer()
     city = CityResponseSerializer()
@@ -283,7 +289,8 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Announcement
-        fields = ["id", "category","creation_date", "title", "province", "city", "type_cooperation", "minimum_salary", "company"]
+        fields = ["id", "category", "creation_date", "title", "province", "city", "type_cooperation", "minimum_salary",
+                  "company"]
 
     def get_type_cooperation(self, obj):
         if obj.type_cooperation:
