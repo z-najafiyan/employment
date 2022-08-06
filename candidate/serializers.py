@@ -5,8 +5,8 @@ from candidate.models import (MarkedAnnouncement, Education, JobPreference, Resu
                               Candidate, Language, ProfessionalSkill)
 from common.models import (User, Skill)
 from employer.models import (Announcement, Company, Applicant)
-from other_files.response_serialzer import (ProvinceResponseSerializer, JobBenefitsResponseSerializer,
-                                            UserResponseSerializer, CategoryResponseSerializer,
+from other_files.response_serialzer import (ProvinceResponseSerializer, UserResponseSerializer,
+                                            CategoryResponseSerializer,
                                             CityResponseSerializer, ActivityResponseSerializer, )
 
 
@@ -66,8 +66,15 @@ class CandidateEducationPOSTSerializer(serializers.ModelSerializer):
                   "description", "resumes"]
 
 
-class CandidateProfessionalSkillSerializer(serializers.ModelSerializer):
-    skill = serializers.CharField(max_length=200)
+class CandidateSkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = "__all__"
+
+
+
+class CandidateProfessionalSkillSerializer(WritableNestedModelSerializer):
+    skill = CandidateSkillSerializer()
 
     class Meta:
         model = ProfessionalSkill
@@ -75,7 +82,7 @@ class CandidateProfessionalSkillSerializer(serializers.ModelSerializer):
 
 
 class CandidateProfessionalSkillGetSerializer(serializers.ModelSerializer):
-    skill = serializers.CharField(max_length=200)
+    skill = CandidateSkillSerializer()
     mastery_level = serializers.SerializerMethodField()
 
     class Meta:
@@ -104,7 +111,8 @@ class CandidateLanguagePostSerializer(serializers.ModelSerializer):
 
 class CandidateLanguageGetSerializer(serializers.ModelSerializer):
     mastery_level = serializers.SerializerMethodField()
-    name=serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
     class Meta:
         model = Language
         fields = ["id", "name", "mastery_level"]
@@ -224,12 +232,6 @@ class CandidateWorkExperiencePostSerializer(serializers.ModelSerializer):
         return value
 
 
-class CandidateSkillSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Skill
-        fields = "__all__"
-
-
 class CandidateResumeGETSerializer(serializers.ModelSerializer):
     education = CandidateEducationGETSerializer(many=True)
     personal_info = CandidatePersonalInfoGETSerializer()
@@ -324,7 +326,7 @@ class CandidateAnnouncementDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement
         fields = ["id", "title", "province", "city", "type_cooperation", "minimum_salary", "gender",
-                  "company", "military_service", "description","years_work_experience"]
+                  "company", "military_service", "description", "years_work_experience"]
 
     def get_type_cooperation(self, obj):
         if obj.type_cooperation:

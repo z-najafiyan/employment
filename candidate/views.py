@@ -21,7 +21,8 @@ from candidate.serializers import (CandidateUserPostSerializer, CandidateAnnounc
                                    CandidatePersonalInfoPostSerializer, CandidatePersonalInfoGETSerializer,
                                    CandidateLanguagePostSerializer,
                                    CandidateLanguageGetSerializer, CandidateProfessionalSkillSerializer,
-                                   CandidateApplicantCreateSerializer, CandidatePatchSerializer)
+                                   CandidateApplicantCreateSerializer, CandidatePatchSerializer,
+                                   CandidateProfessionalSkillGetSerializer)
 from candidate.swagger import (swagger_kwargs)
 from common.models import Skill, User
 from employer.filters import AnnouncementFilter
@@ -220,14 +221,14 @@ class CandidateView(viewsets.ModelViewSet):
             if state == "list":
                 candidate = FactoryGetObject.find_object(Candidate, user=request.user)
                 if candidate.resume:
-                    skill = candidate.resume.skill.all()
+                    skill = candidate.resume.professional_skill.all()
                     # page = self.paginate_queryset(education)
                     # res = self.get_paginated_response(data=CandidateSkillSerializer(page, many=True).data).data
-                    res = CandidateSkillSerializer(skill, many=True).data
+                    res = CandidateProfessionalSkillGetSerializer(skill, many=True).data
                     return Response(res)
             elif state == "detail":
                 skill = FactoryGetObject.find_object(Skill, pk=pk)
-                serializer = CandidateSkillSerializer(skill)
+                serializer = CandidateProfessionalSkillGetSerializer(skill)
                 return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             skill = FactoryGetObject.find_object(Skill, pk=pk)
