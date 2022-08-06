@@ -20,7 +20,10 @@ class AnnouncementFilter(rest_framework.FilterSet):
     several_variable = rest_framework.CharFilter(method="several_variable_filter")
 
     def category_filter(self, queryset, name, value, ):
-        return queryset.filter(category_id=value)
+        if not value.isnumeric():
+            return queryset.filter(category__name=value)
+        else:
+            return queryset.filter(category_id=value)
 
     def province_filter(self, queryset, name, value):
         return queryset.filter(province_id=value)
