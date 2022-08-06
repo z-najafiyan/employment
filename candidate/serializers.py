@@ -312,11 +312,12 @@ class CandidateAnnouncementDetailSerializer(serializers.ModelSerializer):
     type_cooperation = serializers.SerializerMethodField()
     military_service = serializers.SerializerMethodField()
     gender = serializers.SerializerMethodField()
+    years_work_experience = serializers.SerializerMethodField()
 
     class Meta:
         model = Announcement
         fields = ["id", "title", "province", "city", "type_cooperation", "minimum_salary", "gender",
-                  "company", "military_service", "description"]
+                  "company", "military_service", "description","years_work_experience"]
 
     def get_type_cooperation(self, obj):
         if obj.type_cooperation:
@@ -334,6 +335,12 @@ class CandidateAnnouncementDetailSerializer(serializers.ModelSerializer):
         if obj.gender:
             return {"en_name": obj.gender,
                     "fa_name": obj.get_gender_display()}
+        return None
+
+    def get_gender(self, obj):
+        if obj.years_work_experience:
+            return {"en_name": obj.years_work_experience,
+                    "fa_name": obj.get_years_work_experience_display()}
         return None
 
 
