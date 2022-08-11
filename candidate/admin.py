@@ -8,7 +8,7 @@ from candidate.models import (Education,
                               JobPreference,
                               Resume,
                               Candidate,
-                              MarkedAnnouncement, )
+                              MarkedAnnouncement, ProfessionalSkill, )
 
 
 @admin.register(Education)
@@ -78,3 +78,8 @@ class MarkedAnnouncementAdmin(admin.ModelAdmin):
 
     def announcement(self, obj):
         return [p.id for p in obj.announcement.all()]
+@admin.register(ProfessionalSkill)
+class ProfessionalSkillAdmin(admin.ModelAdmin):
+    list_display = ["id", "skill", ]
+    list_display_links = ["id", ]
+    search_fields = ["id", "skill"]
