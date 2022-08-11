@@ -83,7 +83,7 @@ class EmployerAnnouncementListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Announcement
-        fields = ["id","title", "category", "number_not_checked", "number_awaiting_status",
+        fields = ["id", "title", "category", "number_not_checked", "number_awaiting_status",
                   "number_confirmation", "number_hired", "number_rejected", "province"
                   ]
 
@@ -110,17 +110,19 @@ class EmployerAnnouncementListSerializer(serializers.ModelSerializer):
 
 class EmployerAnnouncementGetSerializer(serializers.ModelSerializer):
     creation_date = serializers.IntegerField(source="creation_date_ts", default=None)
-    province=ProvinceResponseSerializer()
-    status_name=serializers.SerializerMethodField()
+    province = ProvinceResponseSerializer()
+    status_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Announcement
-        fields = ["id", "title", "creation_date", "province","status_name"]
+        fields = ["id", "title", "creation_date", "province", "status_name"]
 
     def get_status_name(self, obj):
         if obj.status_name:
             return {'fa_name': obj.get_status_name_display(),
                     "en_name": obj.status_name}
         return None
+
 
 class EmployerUserGetSerializer(serializers.ModelSerializer):
     class Meta:
@@ -130,10 +132,11 @@ class EmployerUserGetSerializer(serializers.ModelSerializer):
 
 class EmployerPersonalInfoGetSerializer(serializers.ModelSerializer):
     image = serializers.CharField(source="link", default=None)
+    category = CategoryResponseSerializer()
 
     class Meta:
         model = PersonalInfo
-        fields = ["image", "id"]
+        fields = ["image", "category", "id"]
 
 
 class EmployerResumeGetSerializer(serializers.ModelSerializer):
@@ -141,7 +144,7 @@ class EmployerResumeGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Resume
-        fields = ["title", "id"]
+        fields = ["personal_info", "id"]
 
 
 class EmployerCandidateGetSerializer(serializers.ModelSerializer):

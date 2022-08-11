@@ -125,7 +125,8 @@ class EmployerView(viewsets.ModelViewSet):
             state = request.GET.get("state")
             announcement_type=request.GET.get("type")
             if state == "list":
-                user = User.objects.get(pk=2)
+                # user = User.objects.get(pk=2)
+                user=request.user
                 employer = FactoryGetObject.find_object(Employer, user=user)
                 announcements = Announcement.objects.filter(status_name=announcement_type,company=employer.company)
                 page = self.paginate_queryset(announcements)
@@ -145,8 +146,8 @@ class EmployerView(viewsets.ModelViewSet):
         if request.method == "GET":
             announcement = FactoryGetObject.find_object(Announcement, pk=pk)
             applicants = announcement.applicant.all()
-            data = request.GET
-            applicant_filter = ApplicantFilter(queryset=applicants, data=data)
+            data = request.query_params
+            applicant_filter = ApplicantFilter(queryset=applicants, data=data).qs
             page=self.paginate_queryset(applicant_filter)
             res = self.get_paginated_response(EmployerApplicantGetSerializer(applicant_filter,
                                                                              many=True).data).data
