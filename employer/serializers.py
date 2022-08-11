@@ -53,7 +53,8 @@ class EmployerCompanyGetSerializer(serializers.ModelSerializer):
     city = CityResponseSerializer()
     activity = ActivityResponseSerializer()
     number_employees = serializers.SerializerMethodField()
-    logo= serializers.CharField(source="link",default=None)
+    logo = serializers.CharField(source="link", default=None)
+
     class Meta:
         model = Company
         fields = "__all__"
@@ -121,7 +122,17 @@ class EmployerUserGetSerializer(serializers.ModelSerializer):
         fields = ["first_name", "last_name", "id"]
 
 
+class EmployerPersonalInfoGetSerializer(serializers.ModelSerializer):
+    image = serializers.CharField(source="link", default=None)
+
+    class Meta:
+        model = PersonalInfo
+        fields = ["image", "id"]
+
+
 class EmployerResumeGetSerializer(serializers.ModelSerializer):
+    personal_info = EmployerPersonalInfoGetSerializer()
+
     class Meta:
         model = Resume
         fields = ["title", "id"]

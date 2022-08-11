@@ -90,10 +90,14 @@ class PersonalInfo(models.Model):
     gender = models.CharField(choices=GENDER, max_length=500, null=True, blank=True)
     marital_status = models.CharField(choices=MARITAL_STATUS, max_length=1000, null=True, blank=True)
     military_status = models.CharField(choices=MILITARY_SERVICE, max_length=1000, null=True, blank=True)
-
+    image=models.ImageField(upload_to="",null=True)
     def __str__(self):
         return f"id{self.id}"
-
+    @property
+    def link(self, ):
+        if self.logo:
+            return f"{settings.IMAGE_URL_SERVE}{settings.MEDIA_URL}{self.image}"
+        return None
     class Meta:
         ordering = ["-id"]
 
