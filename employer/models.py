@@ -112,7 +112,7 @@ class Announcement(models.Model):
     creator_user = models.ForeignKey(User, related_name="announcements", related_query_name="announcement",
                                      on_delete=models.CASCADE)
     # skill = models.ManyToManyField(Skill, )
-    description = models.TextField(max_length=1000, null=True, blank=True)
+    description = models.TextField(max_length=10000, null=True, blank=True)
     company = models.ForeignKey(Company, related_name="announcements", related_query_name="announcement",
                                 on_delete=models.CASCADE)
     years_work_experience = models.CharField(choices=YEARS_WORK_EXPERIENCE, max_length=500, default="unlimited")
