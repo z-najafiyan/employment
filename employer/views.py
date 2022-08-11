@@ -144,7 +144,7 @@ class EmployerView(viewsets.ModelViewSet):
     def applicant(self, request, pk):
         if request.method == "GET":
             announcement = FactoryGetObject.find_object(Announcement, pk=pk)
-            applicants = announcement.applicant
+            applicants = announcement.applicant.all()
             data = request.GET
             applicant_filter = ApplicantFilter(queryset=applicants, data=data)
             page=self.paginate_queryset(applicant_filter)
