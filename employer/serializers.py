@@ -110,7 +110,7 @@ class EmployerAnnouncementListSerializer(serializers.ModelSerializer):
 
 class EmployerAnnouncementGetSerializer(serializers.ModelSerializer):
     creation_date = serializers.IntegerField(source="creation_date_ts", default=None)
-
+    province=ProvinceResponseSerializer()
     class Meta:
         model = Announcement
         fields = ["id", "title", "creation_date", "province"]
