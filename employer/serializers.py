@@ -83,7 +83,7 @@ class EmployerAnnouncementListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Announcement
-        fields = ["title", "category", "number_not_checked", "number_awaiting_status",
+        fields = ["id","title", "category", "number_not_checked", "number_awaiting_status",
                   "number_confirmation", "number_hired", "number_rejected", "province"
                   ]
 
