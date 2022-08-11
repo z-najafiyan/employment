@@ -78,6 +78,8 @@ class MarkedAnnouncementAdmin(admin.ModelAdmin):
 
     def announcement(self, obj):
         return [p.id for p in obj.announcement.all()]
+
+
 @admin.register(ProfessionalSkill)
 class ProfessionalSkillAdmin(admin.ModelAdmin):
     list_display = ["id", "skill", ]
