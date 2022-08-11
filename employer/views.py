@@ -125,8 +125,8 @@ class EmployerView(viewsets.ModelViewSet):
             state = request.GET.get("state")
             announcement_type=request.GET.get("type")
             if state == "list":
-                # user = User.objects.get(pk=2)
-                user=request.user
+                user = User.objects.get(pk=2)
+                # user=request.user
                 employer = FactoryGetObject.find_object(Employer, user=user)
                 announcements = Announcement.objects.filter(status_name=announcement_type,company=employer.company)
                 page = self.paginate_queryset(announcements)
