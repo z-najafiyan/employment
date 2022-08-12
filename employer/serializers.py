@@ -350,12 +350,18 @@ class EmployerCandidateDeleteSerializer(serializers.ModelSerializer):
     user = EmployerUserDetailSerializer()
     resume = EmployerResumeDetailSerializer()
     applicant_status=serializers.SerializerMethodField()
+    created_date_time=serializers.SerializerMethodField()
     class Meta:
         model = Candidate
-        fields = ["user","resume","mobile","email","applicant_status","id"]
+        fields = ["user","resume","mobile","email","applicant_status","id","created_date_time"]
     def get_applicant_status(self,obj):
         applicant=self.context["applicant"]
         if applicant.applicant_status:
             return {"en_name": applicant.applicant_status,
                     "fa_name": applicant.get_applicant_status_display()}
+        return None
+    def get_created_date_time(self,obj):
+        applicant = self.context["applicant"]
+        if applicant.created_date_time:
+            return applicant.created_date_time_ts
         return None
