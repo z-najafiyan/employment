@@ -320,7 +320,7 @@ class EmployerProfessionalSkillDetailSerializer(serializers.ModelSerializer):
 class EmployerResumeDetailSerializer(serializers.ModelSerializer):
     education = EmployerEducationDetailSerializer(many=True)
     personal_info = EmployerPersonalInfoDetailSerializer()
-    professional_skill = EmployerSkillDetailSerializer(many=True)
+    professional_skill = EmployerProfessionalSkillDetailSerializer(many=True)
     job_preferences = EmployerJobPreferencesDetailSerializer()
     work_experience = EmployerWorkExperienceDetailSerializer(many=True)
     file = serializers.CharField(source="link", allow_null=True)
