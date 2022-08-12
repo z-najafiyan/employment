@@ -339,7 +339,13 @@ class EmployerResumeDetailSerializer(serializers.ModelSerializer):
 class EmployerCandidateDeleteSerializer(serializers.ModelSerializer):
     user = EmployerUserDetailSerializer()
     resume = EmployerResumeDetailSerializer()
-
+    applicant_status=serializers.SerializerMethodField()
     class Meta:
         model = Candidate
         fields = "__all__"
+    def get_applicant_status(self,obj):
+        applicant=self.context["applicant"]
+        if applicant.applicant_status:
+            return {"en_name": applicant.applicant_status,
+                    "fa_name": applicant.get_applicant_status_display()}
+        return None

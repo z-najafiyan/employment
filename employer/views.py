@@ -169,8 +169,9 @@ class EmployerView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["candidate"])
     @action(methods=["GET"], detail=True)
     def candidate(self, request, pk):
-        candidate = FactoryGetObject.find_object(Candidate, pk=pk)
-        serializer = EmployerCandidateDeleteSerializer(candidate)
+        applicant = FactoryGetObject.find_object(Applicant, pk=pk)
+        candidate=applicant.candidate
+        serializer = EmployerCandidateDeleteSerializer(candidate,context={"applicant":applicant})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["rejected"])
