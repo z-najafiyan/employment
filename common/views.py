@@ -27,16 +27,16 @@ class CommonView(viewsets.ModelViewSet):
     def province(self, request):
         instances = Province.objects.all()
         serializer = ProvinceResponseSerializer(instances, many=True)
-        return Response(serializer.data, )
+        return Response({"results":serializer.data}, )
 
     @action(methods=["get"], detail=False)
     def city(self, request):
         instances = City.objects.all()
         serializer = CityResponseSerializer(instances,many=True)
-        return Response(serializer.data, )
+        return Response({"results":serializer.data}, )
 
     @action(methods=["get"], detail=False)
     def category(self, request):
         instances = Category.objects.all()
         serializer = CategoryResponseSerializer(instances, many=True)
-        return Response(serializer.data, )
+        return Response({"results":serializer.data}, )
