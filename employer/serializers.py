@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from candidate.models import Candidate, Resume, Education, PersonalInfo, WorkExperience, JobPreference, JobBenefits, \
-    ProfessionalSkill
+    ProfessionalSkill, Language
 from common.models import User, Category, Skill
 from employer.models import Company, Announcement, StatusLog, Applicant, Employer
 from other_files.response_serialzer import CityResponseSerializer, ProvinceResponseSerializer, \
@@ -316,6 +316,15 @@ class EmployerProfessionalSkillDetailSerializer(serializers.ModelSerializer):
                     "fa_name": obj.get_mastery_level_display()}
         return None
 
+class EmployerLanguageGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ["id", "name", "mastery_level",]
+    def get_mastery_level(self, obj):
+        if obj.mastery_level:
+            return {"en_name": obj.mastery_level,
+                    "fa_name": obj.get_mastery_level_display()}
+        return None
 
 class EmployerResumeDetailSerializer(serializers.ModelSerializer):
     education = EmployerEducationDetailSerializer(many=True)
@@ -325,6 +334,7 @@ class EmployerResumeDetailSerializer(serializers.ModelSerializer):
     work_experience = EmployerWorkExperienceDetailSerializer(many=True)
     file = serializers.CharField(source="link", allow_null=True)
     employment_status=serializers.SerializerMethodField()
+    language=EmployerLanguageGetSerializer(many=True)
     class Meta:
         model = Resume
         fields = ["id","file","education","personal_info","professional_skill","job_preferences","work_experience",
