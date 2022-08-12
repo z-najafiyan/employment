@@ -327,7 +327,7 @@ class EmployerResumeDetailSerializer(serializers.ModelSerializer):
     employment_status=serializers.SerializerMethodField()
     class Meta:
         model = Resume
-        fields = ["id","file","education""personal_info","professional_skill","job_preferences","work_experience",
+        fields = ["id","file","education","personal_info","professional_skill","job_preferences","work_experience",
                   "about_me","language","employment_status"]
     def get_employment_status(self,obj):
         is_employed = obj.work_experience.all()[0].is_employed
