@@ -324,10 +324,16 @@ class EmployerResumeDetailSerializer(serializers.ModelSerializer):
     job_preferences = EmployerJobPreferencesDetailSerializer()
     work_experience = EmployerWorkExperienceDetailSerializer(many=True)
     file = serializers.CharField(source="link", allow_null=True)
-
+    employment_status=serializers.SerializerMethodField()
     class Meta:
         model = Resume
-        fields = "__all__"
+        fields = ["id","file","education""personal_info","professional_skill","job_preferences","work_experience",
+                  "about_me","language","employment_status"]
+    def get_employment_status(self,obj):
+        is_employed = obj.work_experience.all()[0].is_employed
+        if is_employed:
+            return "به دنبال شغلی بهتر"
+        return "جویای کار"
 
 
 class EmployerCandidateDeleteSerializer(serializers.ModelSerializer):
