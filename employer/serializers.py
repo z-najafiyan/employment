@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from candidate.models import Candidate, Resume, Education, PersonalInfo, WorkExperience, JobPreference, JobBenefits
+from candidate.models import Candidate, Resume, Education, PersonalInfo, WorkExperience, JobPreference, JobBenefits, \
+    ProfessionalSkill
 from common.models import User, Category, Skill
 from employer.models import Company, Announcement, StatusLog, Applicant, Employer
 from other_files.response_serialzer import CityResponseSerializer, ProvinceResponseSerializer, \
@@ -191,17 +192,49 @@ class EmployerCategoryDetailSerializer(serializers.ModelSerializer):
 
 
 class EmployerEducationDetailSerializer(serializers.ModelSerializer):
+    grade = serializers.SerializerMethodField()
+    start_date = serializers.IntegerField(source="start_date_ts", default=None)
+    end_date = serializers.IntegerField(source="end_date_ts", default=None)
+
     class Meta:
         model = Education
         fields = "__all__"
 
+    def get_grade(self, obj):
+        if obj.grade:
+            return {"en_name": obj.grade,
+                    "fa_name": obj.get_grade_display()}
+
 
 class EmployerPersonalInfoDetailSerializer(serializers.ModelSerializer):
     # province = ProvinceResponseSerializer()
+    category = CategoryResponseSerializer()
+    gender = serializers.SerializerMethodField()
+    marital_status = serializers.SerializerMethodField()
+    military_status = serializers.SerializerMethodField()
+    image = serializers.CharField(source="link", default=None)
 
     class Meta:
         model = PersonalInfo
         fields = "__all__"
+
+    def get_marital_status(self, obj):
+        if obj.marital_status:
+            return {"en_name": obj.marital_status,
+                    "fa_name": obj.get_marital_status_display()}
+        return None
+
+    def get_military_status(self, obj):
+        if obj.military_status:
+            return {"en_name": obj.military_status,
+                    "fa_name": obj.get_military_status_display()}
+        return None
+
+    def get_minimum_salary(self, obj):
+        if obj.minimum_salary:
+            return {"en_name": obj.minimum_salary,
+                    "fa_name": obj.get_minimum_salary_display()}
+        return None
 
 
 class EmployerSkillDetailSerializer(serializers.ModelSerializer):
@@ -218,12 +251,40 @@ class EmployerJobBenefitsDetailSerializer(serializers.ModelSerializer):
 
 class EmployerJobPreferencesDetailSerializer(serializers.ModelSerializer):
     province = ProvinceResponseSerializer()
+    type_cooperation = serializers.SerializerMethodField()
+    mastery_level = serializers.SerializerMethodField()
+    minimum_salary = serializers.SerializerMethodField()
+    degree_of_educations = serializers.SerializerMethodField()
 
     # job_benefits = EmployerJobBenefitsDetailSerializer(many=True)
 
     class Meta:
         model = JobPreference
         fields = "__all__"
+
+    def get_type_cooperation(self, obj):
+        if obj.type_cooperation:
+            return {"en_name": obj.type_cooperation,
+                    "fa_name": obj.get_type_cooperation_display()}
+        return None
+
+    def get_mastery_level(self, obj):
+        if obj.mastery_level:
+            return {"en_name": obj.mastery_level,
+                    "fa_name": obj.get_mastery_level_display()}
+        return None
+
+    def get_minimum_salary(self, obj):
+        if obj.minimum_salary:
+            return {"en_name": obj.minimum_salary,
+                    "fa_name": obj.get_minimum_salary_display()}
+        return None
+
+    def get_degree_of_educations(self, obj):
+        if obj.degree_of_educations:
+            return {"en_name": obj.degree_of_educations,
+                    "fa_name": obj.get_degree_of_educations_display()}
+        return None
 
 
 class EmployerWorkExperienceDetailSerializer(serializers.ModelSerializer):
@@ -235,11 +296,26 @@ class EmployerWorkExperienceDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class EmployerProfessionalSkillDetailSerializer(serializers.ModelSerializer):
+    skill = EmployerSkillDetailSerializer()
+    mastery_level = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProfessionalSkill
+        fields = "__all__"
+
+    def get_mastery_level(self, obj):
+        if obj.mastery_level:
+            return {"en_name": obj.mastery_level,
+                    "fa_name": obj.get_mastery_level_display()}
+        return None
+
+
 class EmployerResumeDetailSerializer(serializers.ModelSerializer):
     category = EmployerCategoryDetailSerializer()
     education = EmployerEducationDetailSerializer(many=True)
     personal_info = EmployerPersonalInfoDetailSerializer()
-    skill = EmployerSkillDetailSerializer(many=True)
+    professional_skill = EmployerSkillDetailSerializer(many=True)
     job_preferences = EmployerJobPreferencesDetailSerializer()
     work_experience = EmployerWorkExperienceDetailSerializer(many=True)
     file = serializers.CharField(source="link", allow_null=True)
