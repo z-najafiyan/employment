@@ -218,6 +218,12 @@ class EmployerPersonalInfoDetailSerializer(serializers.ModelSerializer):
         model = PersonalInfo
         fields = "__all__"
 
+    def get_gender(self, obj):
+        if obj.gender:
+            return {"en_name": obj.gender,
+                    "fa_name": obj.get_gender_display()}
+        return None
+
     def get_marital_status(self, obj):
         if obj.marital_status:
             return {"en_name": obj.marital_status,
@@ -312,7 +318,6 @@ class EmployerProfessionalSkillDetailSerializer(serializers.ModelSerializer):
 
 
 class EmployerResumeDetailSerializer(serializers.ModelSerializer):
-    category = EmployerCategoryDetailSerializer()
     education = EmployerEducationDetailSerializer(many=True)
     personal_info = EmployerPersonalInfoDetailSerializer()
     professional_skill = EmployerSkillDetailSerializer(many=True)
