@@ -114,12 +114,19 @@ class CandidateView(viewsets.ModelViewSet):
             serializer = CandidateResumeGETSerializer(candidate.resume)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
-            serializer = CandidateResumePatchSerializer(candidate.resume, data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            obj = serializer.save()
-            serializer_res = CandidateResumeGETSerializer(obj)
-            return Response(serializer_res.data, status=status.HTTP_200_OK)
+            pass
+            # candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+            # serializer = CandidateResumePatchSerializer(candidate.resume, data=request.data, partial=True)
+            # serializer.is_valid(raise_exception=True)
+            # obj = serializer.save()
+            # serializer_res = CandidateResumeGETSerializer(obj)
+            # return Response(serializer_res.data, status=status.HTTP_200_OK)
+            # candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+            # serializer = CandidateResumePatchV2Serializer(candidate.resume, data=request.data, partial=True)
+
+
+
+
 
     @swagger_auto_schema(**swagger_kwargs["education_delete"])
     @swagger_auto_schema(**swagger_kwargs["education_get"])
@@ -421,7 +428,11 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["patch"], detail=True)
     def send_resume(self, request, pk):
         announcement = FactoryGetObject.find_object(Announcement, pk=pk)
-        serializer = CandidateApplicantCreateSerializer(data=request.data)
+        # user=request.user
+        user=User.objects.get(pk=3)
+        candidate=FactoryGetObject.find_object(Candidate,user=user)
+        data={'candidate':candidate.id}
+        serializer = CandidateApplicantCreateSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         announcement.applicant.add(instance)
