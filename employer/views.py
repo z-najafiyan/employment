@@ -180,13 +180,19 @@ class EmployerView(viewsets.ModelViewSet):
         applicant = FactoryGetObject.find_object(Applicant, pk=pk)
         applicant.applicant_status = "rejected"
         applicant.save()
+        announcement = Announcement.objects.filter(applicant=applicant).first()
+        _ = StatusLog.objects.create(
+            candidate=applicant.candidate,
+            announcement=announcement,
+            applicant_status="rejected",
+            user=User.objects.get(pk=2), )
         return Response({"message": "done"}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["confirmation"])
     @action(methods=["GET"], detail=True)
     def confirmation(self, request, pk):
         applicant = FactoryGetObject.find_object(Applicant, pk=pk)
-        announcement = FactoryGetObject.find_object(Announcement, applicant=applicant)
+        announcement = Announcement.objects.filter(applicant=applicant).first()
         applicant.applicant_status = "confirmation_for_interview"
         applicant.save()
         user = User.objects.get(pk=2)
@@ -202,7 +208,7 @@ class EmployerView(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=True)
     def hired(self, request, pk):
         applicant = FactoryGetObject.find_object(Applicant, pk=pk)
-        announcement = FactoryGetObject.find_object(Announcement, applicant=applicant)
+        announcement = Announcement.objects.filter(applicant=applicant).first()
 
         applicant.applicant_status = "hired"
         applicant.save()
@@ -218,7 +224,7 @@ class EmployerView(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=True)
     def awaiting_status(self, request, pk):
         applicant = FactoryGetObject.find_object(Applicant, pk=pk)
-        announcement = FactoryGetObject.find_object(Announcement, applicant=applicant)
+        announcement = Announcement.objects.filter(applicant=applicant).first()
         applicant.applicant_status = "awaiting_status"
         applicant.save()
         # user = request.user
