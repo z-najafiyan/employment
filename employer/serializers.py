@@ -317,6 +317,8 @@ class EmployerProfessionalSkillDetailSerializer(serializers.ModelSerializer):
         return None
 
 class EmployerLanguageGetSerializer(serializers.ModelSerializer):
+    mastery_level=serializers.SerializerMethodField()
+    name=serializers.SerializerMethodField()
     class Meta:
         model = Language
         fields = ["id", "name", "mastery_level",]
@@ -324,6 +326,11 @@ class EmployerLanguageGetSerializer(serializers.ModelSerializer):
         if obj.mastery_level:
             return {"en_name": obj.mastery_level,
                     "fa_name": obj.get_mastery_level_display()}
+        return None
+    def get_name(self, obj):
+        if obj.name:
+            return {"en_name": obj.name,
+                    "fa_name": obj.get_name_display()}
         return None
 
 class EmployerResumeDetailSerializer(serializers.ModelSerializer):
