@@ -382,8 +382,8 @@ class CandidateResumePatchV2Serializer(WritableNestedModelSerializer):
     job_preferences = CandidateJobPreferencePostSerializer(allow_null=True,partial=True)
     work_experience = CandidateWorkExperiencePostSerializer(many=True,allow_null=True,partial=True)
     language = CandidateLanguagePostSerializer(many=True,allow_null=True,partial=True)
-    email = serializers.EmailField(allow_null=True,partial=True)
-    mobile = serializers.CharField(max_length=11)
+    email = serializers.EmailField(allow_null=True,)
+    mobile = serializers.CharField(max_length=11,allow_null=True)
 
     class Meta:
         model = Resume
