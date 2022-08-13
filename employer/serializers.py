@@ -303,7 +303,7 @@ class EmployerWorkExperienceDetailSerializer(serializers.ModelSerializer):
 
 
 class EmployerProfessionalSkillDetailSerializer(serializers.ModelSerializer):
-    skill = EmployerSkillDetailSerializer()
+    # skill = EmployerSkillDetailSerializer()
     mastery_level = serializers.SerializerMethodField()
 
     class Meta:

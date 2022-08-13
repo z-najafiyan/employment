@@ -130,8 +130,9 @@ class JobPreference(models.Model):
 
 
 class ProfessionalSkill(models.Model):
-    skill = models.ForeignKey(Skill, related_name="professional_skills", related_query_name="professional_skill",
-                              on_delete=models.CASCADE)
+    # skill = models.ForeignKey(Skill, related_name="professional_skills", related_query_name="professional_skill",
+    #                           on_delete=models.CASCADE)
+    skill=models.CharField(max_length=500,blank=True)
     mastery_level = models.CharField(choices=LEVEL, max_length=500, null=True, blank=True)
 
     def __str__(self):

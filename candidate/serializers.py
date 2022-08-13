@@ -74,7 +74,7 @@ class CandidateSkillSerializer(serializers.ModelSerializer):
 
 
 class CandidateProfessionalSkillSerializer(WritableNestedModelSerializer):
-    skill = CandidateSkillSerializer()
+    # skill = CandidateSkillSerializer()
 
     class Meta:
         model = ProfessionalSkill
@@ -84,7 +84,7 @@ class CandidateProfessionalSkillSerializer(WritableNestedModelSerializer):
 
 
 class CandidateProfessionalSkillGetSerializer(serializers.ModelSerializer):
-    skill = CandidateSkillSerializer()
+    # skill = CandidateSkillSerializer()
     mastery_level = serializers.SerializerMethodField()
 
     class Meta:
