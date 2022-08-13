@@ -376,13 +376,13 @@ class CandidateAnnouncementPatchSerializer(WritableNestedModelSerializer):
 
 
 class CandidateResumePatchV2Serializer(WritableNestedModelSerializer):
-    education = CandidateEducationPOSTSerializer(many=True)
-    personal_info = CandidatePersonalInfoPostSerializer()
-    professional_skill = CandidateProfessionalSkillSerializer(many=True)
-    job_preferences = CandidateJobPreferencePostSerializer()
-    work_experience = CandidateWorkExperiencePostSerializer(many=True)
-    language = CandidateLanguagePostSerializer(many=True)
-    email = serializers.EmailField()
+    education = CandidateEducationPOSTSerializer(many=True,allow_null=True,partial=True)
+    personal_info = CandidatePersonalInfoPostSerializer(allow_null=True,partial=True)
+    professional_skill = CandidateProfessionalSkillSerializer(many=True,allow_null=True,partial=True)
+    job_preferences = CandidateJobPreferencePostSerializer(allow_null=True,partial=True)
+    work_experience = CandidateWorkExperiencePostSerializer(many=True,allow_null=True,partial=True)
+    language = CandidateLanguagePostSerializer(many=True,allow_null=True,partial=True)
+    email = serializers.EmailField(allow_null=True,partial=True)
     mobile = serializers.CharField(max_length=11)
 
     class Meta:

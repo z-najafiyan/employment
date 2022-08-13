@@ -13,15 +13,15 @@ from employment import settings
 def timestamp(date):
     return time.mktime(date.timetuple())
 class Education(models.Model):
-    field_of_study = models.CharField(max_length=500, )
-    name_university = models.CharField(max_length=500)
-    grade = models.CharField(max_length=100, choices=GRADE)
+    field_of_study = models.CharField(max_length=500,null=True )
+    name_university = models.CharField(max_length=500,null=True)
+    grade = models.CharField(max_length=100, choices=GRADE,null=True)
     # start_years = models.CharField(max_length=4)
     # end_years = models.CharField(max_length=4)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
-    is_student = models.BooleanField()
-    description = models.CharField(max_length=2000)
+    is_student = models.BooleanField(default=False)
+    description = models.CharField(max_length=2000,null=True)
 
     def __str__(self):
         return f"id{self.id}"
@@ -41,7 +41,7 @@ class Education(models.Model):
         return None
 class Language(models.Model):
     name = models.CharField(choices=LANGUAGE_NAME, max_length=20,unique=True)
-    mastery_level = models.CharField(choices=MASTERY_LEVEL, max_length=20)
+    mastery_level = models.CharField(choices=MASTERY_LEVEL, max_length=20,null=True)
 
     def __str__(self):
         return f"id{self.id}"
@@ -51,8 +51,8 @@ class Language(models.Model):
 
 
 class WorkExperience(models.Model):
-    job_title = models.CharField(max_length=500, )
-    company_name = models.CharField(max_length=1000)
+    job_title = models.CharField(max_length=500,null=True )
+    company_name = models.CharField(max_length=1000,null=True)
     # start_month = models.CharField(max_length=2, choices=MONTH)
     # start_years = models.CharField(max_length=4, validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
     # end_month = models.CharField(max_length=2, choices=MONTH,)
@@ -60,8 +60,8 @@ class WorkExperience(models.Model):
     #                              validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
-    is_employed = models.BooleanField()
-    description = models.CharField(max_length=2000)
+    is_employed = models.BooleanField(default=False)
+    description = models.CharField(max_length=2000,null=True)
 
     def __str__(self):
         return f"id{self.id}"
@@ -86,7 +86,7 @@ class PersonalInfo(models.Model):
                                  )
     full_name = models.CharField(max_length=200, null=True, blank=True)
     address = models.TextField(max_length=20000, null=True, )
-    years_birth = models.CharField(max_length=4, )
+    years_birth = models.CharField(max_length=4,null=True )
     gender = models.CharField(choices=GENDER, max_length=500, null=True, blank=True)
     marital_status = models.CharField(choices=MARITAL_STATUS, max_length=1000, null=True, blank=True)
     military_status = models.CharField(choices=MILITARY_SERVICE, max_length=1000, null=True, blank=True)
@@ -144,16 +144,17 @@ class ProfessionalSkill(models.Model):
 
 class Resume(models.Model):
     file = models.FileField(upload_to='', blank=True, null=True)
-    education = models.ManyToManyField(Education, related_name="resumes", related_query_name="resume", )
+    education = models.ManyToManyField(Education, related_name="resumes", related_query_name="resume",null=True )
     personal_info = models.OneToOneField(PersonalInfo, related_name="resumes", related_query_name="resume",
                                       on_delete=models.CASCADE, null=True, blank=True)
-    professional_skill = models.ManyToManyField(ProfessionalSkill, related_name="resumes", related_query_name="resume")
+    professional_skill = models.ManyToManyField(ProfessionalSkill, related_name="resumes", related_query_name="resume",
+                                                null=True,blank=True )
     job_preferences = models.OneToOneField(JobPreference, related_name="resumes", related_query_name="resume",
                                         on_delete=models.CASCADE, null=True, blank=True)
     work_experience = models.ManyToManyField(WorkExperience, related_name="resumes", related_query_name="resume", )
     about_me = models.TextField(max_length=20000, null=True, blank=True)
 
-    language = models.ManyToManyField(Language, related_name="resumes", related_query_name="resume", )
+    language = models.ManyToManyField(Language, related_name="resumes", related_query_name="resume",null=True,blank=True)
 
 
     def __str__(self):
