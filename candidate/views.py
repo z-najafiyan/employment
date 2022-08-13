@@ -22,7 +22,7 @@ from candidate.serializers import (CandidateUserPostSerializer, CandidateAnnounc
                                    CandidateLanguagePostSerializer,
                                    CandidateLanguageGetSerializer, CandidateProfessionalSkillSerializer,
                                    CandidateApplicantCreateSerializer, CandidatePatchSerializer,
-                                   CandidateProfessionalSkillGetSerializer)
+                                   CandidateProfessionalSkillGetSerializer, CandidateResumePatchV2Serializer)
 from candidate.swagger import (swagger_kwargs)
 from common.models import Skill, User
 from employer.filters import AnnouncementFilter
@@ -108,7 +108,7 @@ class CandidateView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["resume_get"])
     @swagger_auto_schema(**swagger_kwargs["resume_patch"])
     @action(methods=["GET", "PATCH"], detail=False)
-    def resume(self, request):
+    def resume(self, request,):
         if request.method == "GET":
             candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             serializer = CandidateResumeGETSerializer(candidate.resume)
@@ -121,12 +121,19 @@ class CandidateView(viewsets.ModelViewSet):
             # obj = serializer.save()
             # serializer_res = CandidateResumeGETSerializer(obj)
             # return Response(serializer_res.data, status=status.HTTP_200_OK)
-            # candidate = FactoryGetObject.find_object(Candidate, user=request.user)
-            # serializer = CandidateResumePatchV2Serializer(candidate.resume, data=request.data, partial=True)
-
-
-
-
+            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+            serializer = CandidateResumePatchV2Serializer(candidate.resume, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+            if "email" in serializer.validated_data:
+                email=serializer.validated_data.pop("email")
+                candidate.email=email
+            if "mobile" in serializer.validated_data:
+                mobile=serializer.validated_data.pop("mobile")
+                candidate.mobile=mobile
+            candidate.save()
+            serializer.save()
+            return Response({"message":"ok"},status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["education_delete"])
     @swagger_auto_schema(**swagger_kwargs["education_get"])

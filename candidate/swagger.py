@@ -12,7 +12,7 @@ from candidate.serializers import (CandidateAnnouncementDetailSerializer, Candid
                                    CandidateLanguagePostSerializer, CandidateLanguageGetSerializer,
                                    CandidateAnnouncementPatchSerializer, CandidateApplicantCreateSerializer,
                                    CandidatePatchSerializer, CandidateProfessionalSkillSerializer,
-                                   CandidateProfessionalSkillGetSerializer)
+                                   CandidateProfessionalSkillGetSerializer, CandidateResumePatchV2Serializer)
 from other_files.response_serialzer import UserTokenSwaggerSerializer
 
 state_param = openapi.Parameter('state', openapi.IN_QUERY, description="state manual param", type=openapi.TYPE_STRING)
@@ -33,7 +33,7 @@ swagger_kwargs = {
     "resume_get": {"method": "GET",
                    "responses": {201: CandidateResumeGETSerializer()}},
     "resume_patch": {"method": "PATCH",
-                     "request_body": CandidateResumePatchSerializer,
+                     "request_body": CandidateResumePatchV2Serializer,
                      "responses": {201: CandidateResumeGETSerializer()}},
     "education_get": {
         "method": "GET",

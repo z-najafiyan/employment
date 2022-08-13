@@ -63,7 +63,8 @@ class CandidateEducationPOSTSerializer(serializers.ModelSerializer):
     class Meta:
         model = Education
         fields = ["id", "field_of_study", "name_university", "grade", "start_date", "end_date", "is_student",
-                  "description", "resumes"]
+                  "description",
+                  ]
 
 
 class CandidateSkillSerializer(serializers.ModelSerializer):
@@ -72,13 +73,14 @@ class CandidateSkillSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-
 class CandidateProfessionalSkillSerializer(WritableNestedModelSerializer):
     skill = CandidateSkillSerializer()
 
     class Meta:
         model = ProfessionalSkill
-        fields = ["id", "skill", "mastery_level", "resumes"]
+        fields = ["id", "skill", "mastery_level",
+                  # "resumes"]
+                  ]
 
 
 class CandidateProfessionalSkillGetSerializer(serializers.ModelSerializer):
@@ -99,14 +101,14 @@ class CandidateProfessionalSkillGetSerializer(serializers.ModelSerializer):
 class CandidateJobPreferencePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobPreference
-        fields = ["resumes", "province", "type_cooperation", "mastery_level", "minimum_salary", "degree_of_educations",
+        fields = ["province", "type_cooperation", "mastery_level", "minimum_salary", "degree_of_educations",
                   "id"]
 
 
 class CandidateLanguagePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = ["id", "name", "mastery_level", "resumes"]
+        fields = ["id", "name", "mastery_level",]
 
 
 class CandidateLanguageGetSerializer(serializers.ModelSerializer):
@@ -216,7 +218,7 @@ class CandidateWorkExperienceGetSerializer(serializers.ModelSerializer):
 class CandidateWorkExperiencePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkExperience
-        fields = ["id", "resumes", "job_title", "company_name", "start_date", "end_date",
+        fields = ["id", "job_title", "company_name", "start_date", "end_date",
                   "is_employed", "description"]
 
     def validate_end_month(self, value):
@@ -371,3 +373,19 @@ class CandidateAnnouncementPatchSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Announcement
         fields = ["applicant"]
+
+
+class CandidateResumePatchV2Serializer(WritableNestedModelSerializer):
+    education = CandidateEducationPOSTSerializer(many=True)
+    personal_info = CandidatePersonalInfoPostSerializer()
+    professional_skill = CandidateProfessionalSkillSerializer(many=True)
+    job_preferences = CandidateJobPreferencePostSerializer()
+    work_experience = CandidateWorkExperiencePostSerializer(many=True)
+    language = CandidateLanguagePostSerializer(many=True)
+    email = serializers.EmailField()
+    mobile = serializers.CharField(max_length=11)
+
+    class Meta:
+        model = Resume
+        fields = ["file", "education", "personal_info", "professional_skill", "job_preferences", "work_experience",
+                  "about_me", "language", "email", "mobile"]
