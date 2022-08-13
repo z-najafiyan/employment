@@ -121,7 +121,9 @@ class CandidateView(viewsets.ModelViewSet):
             # obj = serializer.save()
             # serializer_res = CandidateResumeGETSerializer(obj)
             # return Response(serializer_res.data, status=status.HTTP_200_OK)
-            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+            user = User.objects.get(pk=3)
+
+            candidate = FactoryGetObject.find_object(Candidate, user=user)
             serializer = CandidateResumePatchV2Serializer(candidate.resume, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             candidate = FactoryGetObject.find_object(Candidate, user=request.user)
@@ -416,10 +418,11 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False)
     def my_announcements(self, request):
         state = request.GET.get("state", None)
+        user=User.objects.get(pk=3)
         if state and state == "all":
-            announcements = Announcement.objects.filter(applicant__candidate__user=request.user)
+            announcements = Announcement.objects.filter(applicant__candidate__user=user)
         else:
-            announcements = Announcement.objects.filter(applicant__candidate__user=request.user,
+            announcements = Announcement.objects.filter(applicant__candidate__user=user,
                                                         applicant__applicant_status=state)
         page = self.paginate_queryset(announcements)
         response = self.get_paginated_response(CandidateAnnouncementListSerializer(page, many=True).data).data
