@@ -125,7 +125,7 @@ class EmployerView(viewsets.ModelViewSet):
 
     @swagger_auto_schema(**swagger_kwargs["company_get"])
     @swagger_auto_schema(**swagger_kwargs["company_patch"])
-    @action(methods=["GET", "PATCH"], detail=True, parser_classes=[FormParser, MultiPartParser])
+    @action(methods=["GET", "PATCH"], detail=True,)
     def company(self, request, pk):
         if request.method == "PATCH":
             company = FactoryGetObject.find_object(Company, pk=pk)

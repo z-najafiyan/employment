@@ -46,7 +46,7 @@ class EmployerSerializer(serializers.ModelSerializer):
 class EmployerCompanyPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = "__all__"
+        exclude = ["logo"]
 
 
 class EmployerCompanyGetSerializer(serializers.ModelSerializer):
