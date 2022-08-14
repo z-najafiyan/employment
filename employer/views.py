@@ -74,6 +74,45 @@ class EmployerView(viewsets.ModelViewSet):
             'access': str(refresh.access_token),
         }
         return Response(res, status=status.HTTP_200_OK)
+    @action(methods=["POST"], detail=False)
+    def sign(self,request):
+        serializer = EmployerUserPostV2Serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+        password = serializer.validated_data["password"]
+        user = User.objects.get(email=email)
+        if user:
+            if not user.check_password(password):
+                return Response([{"user": "password not valid"}], status=status.HTTP_404_NOT_FOUND)
+            try:
+                _ = Employer.objects.get(user=user)
+            except ObjectDoesNotExist:
+                return Response([{"user": "email not valid"}], status=status.HTTP_404_NOT_FOUND)
+            refresh = RefreshToken.for_user(user)
+            res = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            employer = FactoryGetObject.find_object(Employer, user=user)
+            res.update(EmployerSerializer(employer))
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            serializer = EmployerUserPostSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save(username=serializer.validated_data["email"])
+            company = Company.objects.create()
+            _ = Employer.objects.create(user=user, company=company)
+            assign_role(user, "employer")
+
+            refresh = RefreshToken.for_user(user)
+            res = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            employer = FactoryGetObject.find_object(Employer, user=user)
+            res.update(EmployerSerializer(employer))
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
 
     @swagger_auto_schema(**swagger_kwargs["employer"])
     @action(methods=["GET"], detail=False)

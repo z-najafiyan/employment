@@ -22,7 +22,8 @@ from candidate.serializers import (CandidateUserPostSerializer, CandidateAnnounc
                                    CandidateLanguagePostSerializer,
                                    CandidateLanguageGetSerializer, CandidateProfessionalSkillSerializer,
                                    CandidateApplicantCreateSerializer, CandidatePatchSerializer,
-                                   CandidateProfessionalSkillGetSerializer, CandidateResumePatchV2Serializer)
+                                   CandidateProfessionalSkillGetSerializer, CandidateResumePatchV2Serializer,
+                                   CandidateUserSingInSerializer)
 from candidate.swagger import (swagger_kwargs)
 from common.models import Skill, User
 from employer.filters import AnnouncementFilter
@@ -48,10 +49,10 @@ class CandidateView(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         user = serializer.save(username=serializer.validated_data["email"])
         resume = Resume.objects.create()
-        personal_info=PersonalInfo.objects.create()
-        job_preferences=JobPreference.objects.create()
-        resume.personal_info=personal_info
-        resume.job_preferences=job_preferences
+        personal_info = PersonalInfo.objects.create()
+        job_preferences = JobPreference.objects.create()
+        resume.personal_info = personal_info
+        resume.job_preferences = job_preferences
         resume.save()
         _ = Candidate.objects.create(user=user, resume=resume)
         assign_role(user, "candidate")
@@ -87,6 +88,52 @@ class CandidateView(viewsets.ModelViewSet):
         }
         return Response(res, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(**swagger_kwargs["sing"])
+    @action(methods=["POST"], detail=False)
+    def sing(self, request):
+        email = request.data["email"]
+        password = request.data["password"]
+        user = User.objects.get(email=email, )
+        if user:
+            # sign in
+            if not user.check_password(password):
+                return Response([{"user": "password not valid"}], status=status.HTTP_404_NOT_FOUND)
+
+            try:
+                _ = Candidate.objects.get(user=user)
+            except ObjectDoesNotExist:
+                return Response([{"user": "email or password not valid"}], status=status.HTTP_404_NOT_FOUND)
+            refresh = RefreshToken.for_user(user)
+            res = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            candidate = FactoryGetObject.find_object(Candidate, user=user)
+            res.update(CandidateSerializer(candidate).data)
+            return Response(res, status=status.HTTP_200_OK)
+        else:
+            # sign up
+            serializer = CandidateUserSingInSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save(username=serializer.validated_data["email"])
+            resume = Resume.objects.create()
+            personal_info = PersonalInfo.objects.create()
+            job_preferences = JobPreference.objects.create()
+            resume.personal_info = personal_info
+            resume.job_preferences = job_preferences
+            resume.save()
+            _ = Candidate.objects.create(user=user, resume=resume)
+            assign_role(user, "candidate")
+
+            refresh = RefreshToken.for_user(user)
+            res = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            candidate = FactoryGetObject.find_object(Candidate, user=user)
+            res.update(CandidateSerializer(candidate).data)
+            return Response(res, status=status.HTTP_200_OK)
+
     @swagger_auto_schema(**swagger_kwargs["user"])
     @action(methods=["PATCH"], detail=False)
     def user(self, request):
@@ -108,7 +155,7 @@ class CandidateView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["resume_get"])
     @swagger_auto_schema(**swagger_kwargs["resume_patch"])
     @action(methods=["GET", "PATCH"], detail=False)
-    def resume(self, request,):
+    def resume(self, request, ):
         if request.method == "GET":
             candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             serializer = CandidateResumeGETSerializer(candidate.resume)
@@ -128,14 +175,14 @@ class CandidateView(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             if "email" in serializer.validated_data:
-                email=serializer.validated_data.pop("email")
-                candidate.email=email
+                email = serializer.validated_data.pop("email")
+                candidate.email = email
             if "mobile" in serializer.validated_data:
-                mobile=serializer.validated_data.pop("mobile")
-                candidate.mobile=mobile
+                mobile = serializer.validated_data.pop("mobile")
+                candidate.mobile = mobile
             candidate.save()
             serializer.save()
-            return Response({"message":"ok"},status=status.HTTP_200_OK)
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["education_delete"])
     @swagger_auto_schema(**swagger_kwargs["education_get"])
@@ -418,7 +465,7 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False)
     def my_announcements(self, request):
         state = request.GET.get("state", None)
-        user=User.objects.get(pk=3)
+        user = User.objects.get(pk=3)
         if state and state == "all":
             announcements = Announcement.objects.filter(applicant__candidate__user=user)
         else:
@@ -439,9 +486,9 @@ class CandidateView(viewsets.ModelViewSet):
     def send_resume(self, request, pk):
         announcement = FactoryGetObject.find_object(Announcement, pk=pk)
         # user=request.user
-        user=User.objects.get(pk=3)
-        candidate=FactoryGetObject.find_object(Candidate,user=user)
-        data={'candidate':candidate.id}
+        user = User.objects.get(pk=3)
+        candidate = FactoryGetObject.find_object(Candidate, user=user)
+        data = {'candidate': candidate.id}
         serializer = CandidateApplicantCreateSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()

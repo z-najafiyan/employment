@@ -28,6 +28,10 @@ swagger_kwargs = {
         "method": "POST",
         "request_body": CandidateUserSingInSerializer,
         "responses": {201: UserTokenSwaggerSerializer()}},
+    "sing": {
+        "method": "POST",
+        "request_body": CandidateUserSingInSerializer,
+        "responses": {201: UserTokenSwaggerSerializer()}},
     "candidate": {"method": "GET",
                   "responses": {201: CandidateSerializer()}},
     "resume_get": {"method": "GET",
