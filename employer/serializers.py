@@ -89,23 +89,23 @@ class EmployerAnnouncementListSerializer(serializers.ModelSerializer):
                   ]
 
     def get_number_not_checked(self, obj):
-        number = StatusLog.objects.filter(announcement=obj, applicant_status="not_checked").count()
+        number = Applicant.objects.filter(announcement=obj, applicant_status="not_checked").count()
         return number
 
     def get_number_awaiting_status(self, obj):
-        number = StatusLog.objects.filter(announcement=obj, applicant_status="awaiting_status").count()
+        number = Applicant.objects.filter(announcement=obj, applicant_status="awaiting_status").count()
         return number
 
     def get_number_confirmation(self, obj):
-        number = StatusLog.objects.filter(announcement=obj, applicant_status="confirmation_for_interview").count()
+        number = Applicant.objects.filter(announcement=obj, applicant_status="confirmation_for_interview").count()
         return number
 
     def get_number_hired(self, obj):
-        number = StatusLog.objects.filter(announcement=obj, applicant_status="hired").count()
+        number = Applicant.objects.filter(announcement=obj, applicant_status="hired").count()
         return number
 
     def get_number_rejected(self, obj):
-        number = StatusLog.objects.filter(announcement=obj, applicant_status="rejected").count()
+        number = Applicant.objects.filter(announcement=obj, applicant_status="rejected").count()
         return number
 
 
