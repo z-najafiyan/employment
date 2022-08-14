@@ -466,11 +466,13 @@ class CandidateView(viewsets.ModelViewSet):
     def my_announcements(self, request):
         state = request.GET.get("state", None)
         user = User.objects.get(pk=3)
-        if state and state == "all":
-            announcements = Announcement.objects.filter(applicant__candidate__user=user)
-        else:
-            announcements = Announcement.objects.filter(applicant__candidate__user=user,
-                                                        applicant__applicant_status=state)
+        announcements = Announcement.objects.filter(applicant__candidate__user=user)
+
+        # if state and state == "all":
+        #     announcements = Announcement.objects.filter(applicant__candidate__user=user)
+        # else:
+        #     announcements = Announcement.objects.filter(applicant__candidate__user=user,
+        #                                                 applicant__applicant_status=state)
         page = self.paginate_queryset(announcements)
         response = self.get_paginated_response(CandidateAnnouncementListSerializer(page, many=True).data).data
         return Response(response, status=status.HTTP_200_OK)
