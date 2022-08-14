@@ -489,6 +489,9 @@ class CandidateView(viewsets.ModelViewSet):
         user = User.objects.get(pk=3)
         candidate = FactoryGetObject.find_object(Candidate, user=user)
         data = {'candidate': candidate.id}
+        application=Announcement.objects.filter(applicant__announcement=candidate)
+        if application:
+            return Response({'message':"You have applied for registration"},status=status.HTTP_200_OK)
         serializer = CandidateApplicantCreateSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
