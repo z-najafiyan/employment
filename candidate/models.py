@@ -51,7 +51,7 @@ class Language(models.Model):
 
 
 class WorkExperience(models.Model):
-    job_title = models.CharField(max_length=500,null=True )
+    job_title = models.CharField(max_length=500,null=True,blank=True )
     company_name = models.CharField(max_length=1000,null=True)
     # start_month = models.CharField(max_length=2, choices=MONTH)
     # start_years = models.CharField(max_length=4, validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
