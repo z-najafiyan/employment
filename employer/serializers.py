@@ -182,7 +182,7 @@ class EmployerApplicantPatchSerializer(serializers.ModelSerializer):
 class EmployerUserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        exclude = ["password"]
 
 
 class EmployerCategoryDetailSerializer(serializers.ModelSerializer):
@@ -347,8 +347,8 @@ class EmployerResumeDetailSerializer(serializers.ModelSerializer):
         fields = ["id","file","education","personal_info","professional_skill","job_preferences","work_experience",
                   "about_me","language","employment_status"]
     def get_employment_status(self,obj):
-        is_employed = obj.work_experience.all()[0].is_employed
-        if is_employed:
+        is_employed = obj.work_experience.all()
+        if is_employed and is_employed[0].is_employed:
             return "به دنبال شغلی بهتر"
         return "جویای کار"
 

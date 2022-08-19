@@ -87,7 +87,7 @@ MASTERY_LEVEL = [
     ("beginner", "مبتدی"),
     ("medium", "متوسط"),
     ("professional", "حرفه ای"),
-    ("mother_tongue", "زبان مادری"),
+    # ("mother_tongue", "زبان مادری"),
 ]
 
 LANGUAGE_NAME = [
