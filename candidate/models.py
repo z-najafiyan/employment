@@ -95,7 +95,7 @@ class PersonalInfo(models.Model):
         return f"id{self.id}"
     @property
     def link(self, ):
-        if self.logo:
+        if self.image:
             return f"{settings.IMAGE_URL_SERVE}{settings.MEDIA_URL}{self.image}"
         return None
     class Meta:
@@ -151,7 +151,8 @@ class Resume(models.Model):
                                                 null=True,blank=True )
     job_preferences = models.OneToOneField(JobPreference, related_name="resumes", related_query_name="resume",
                                         on_delete=models.CASCADE, null=True, blank=True)
-    work_experience = models.ManyToManyField(WorkExperience, related_name="resumes", related_query_name="resume", )
+    work_experience = models.ManyToManyField(WorkExperience, related_name="resumes", related_query_name="resume",null=True,
+                                             blank=True )
     about_me = models.TextField(max_length=20000, null=True, blank=True)
 
     language = models.ManyToManyField(Language, related_name="resumes", related_query_name="resume",null=True,blank=True)

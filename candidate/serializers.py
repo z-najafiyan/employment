@@ -186,8 +186,11 @@ class CandidateEducationGETSerializer(serializers.ModelSerializer):
 
 class CandidatePersonalInfoGETSerializer(serializers.ModelSerializer):
     # province = ProvinceResponseSerializer()
+    image=serializers.CharField(source="link")
     gender = serializers.SerializerMethodField()
     marital_status = serializers.SerializerMethodField()
+    military_status = serializers.SerializerMethodField()
+
 
     class Meta:
         model = PersonalInfo
@@ -203,6 +206,11 @@ class CandidatePersonalInfoGETSerializer(serializers.ModelSerializer):
         if obj.marital_status:
             return {"en_name": obj.marital_status,
                     "fa_name": obj.get_marital_status_display()}
+        return None
+    def get_military_status(self, obj):
+        if obj.military_status:
+            return {"en_name": obj.military_status,
+                    "fa_name": obj.get_military_status_display()}
         return None
 
 
