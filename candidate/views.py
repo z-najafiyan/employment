@@ -424,7 +424,7 @@ class CandidateView(viewsets.ModelViewSet):
         announcement = Announcement.objects.all()
         data = AnnouncementFilter(queryset=announcement, data=query_params).qs
         page = self.paginate_queryset(data)
-        response = self.get_paginated_response(CandidateAnnouncementListSerializer(page, many=True).data).data
+        response = self.get_paginated_response(CandidateAnnouncementListSerializer(page ,many=True).data).data
         return Response(response, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["announcement_detail"])

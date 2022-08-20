@@ -320,8 +320,17 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
         return None
 
     def get_applicant(self, obj):
-        applicant = obj.applicant.filter(candidate__user=self.context["user"], pk=obj.pk).first()
-        return {"applicant_status": applicant.get_applicant_status_display()}
+        if "user" in self.context:
+            # a=obj.applicant.all()
+            # pk=[i.id for i in a]
+            # Applicant.objects.filter(pk__in=pk,)
+            applicant = obj.applicant.filter(candidate__user=self.context["user"], announcement__pk=obj.pk).first()
+            if applicant:
+                return None
+            elif applicant.applicant_status:
+                return {"applicant_status": applicant.get_applicant_status_display()}
+            return None
+        return None
 
 
 class CandidateCompanyDetailSerializer(serializers.ModelSerializer):
