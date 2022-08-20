@@ -325,7 +325,7 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
             # pk=[i.id for i in a]
             # Applicant.objects.filter(pk__in=pk,)
             applicant = obj.applicant.filter(candidate__user=self.context["user"], announcement__pk=obj.pk).first()
-            if applicant:
+            if not  applicant:
                 return None
             elif applicant.applicant_status:
                 return {"applicant_status": applicant.get_applicant_status_display()}
