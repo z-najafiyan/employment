@@ -40,7 +40,7 @@ class Education(models.Model):
             return timestamp(self.end_date) * 1000
         return None
 class Language(models.Model):
-    name = models.CharField(choices=LANGUAGE_NAME, max_length=20,unique=True)
+    name = models.CharField(choices=LANGUAGE_NAME, max_length=20)
     mastery_level = models.CharField(choices=MASTERY_LEVEL, max_length=20,null=True)
 
     def __str__(self):
