@@ -477,7 +477,7 @@ class CandidateView(viewsets.ModelViewSet):
         #     announcements = Announcement.objects.filter(applicant__candidate__user=user,
         #                                                 applicant__applicant_status=state)
         page = self.paginate_queryset(announcements)
-        response = self.get_paginated_response(CandidateAnnouncementListSerializer(page, many=True).data).data
+        response = self.get_paginated_response(CandidateAnnouncementListSerializer(page,context={"user":user}, many=True).data).data
         return Response(response, status=status.HTTP_200_OK)
 
     @action(methods=["GET"], detail=False)
