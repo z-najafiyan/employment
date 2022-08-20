@@ -163,7 +163,6 @@ class CandidateView(viewsets.ModelViewSet):
             serializer = CandidateResumeGETSerializer(candidate.resume)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            pass
             # candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             # serializer = CandidateResumePatchSerializer(candidate.resume, data=request.data, partial=True)
             # serializer.is_valid(raise_exception=True)
@@ -171,11 +170,10 @@ class CandidateView(viewsets.ModelViewSet):
             # serializer_res = CandidateResumeGETSerializer(obj)
             # return Response(serializer_res.data, status=status.HTTP_200_OK)
             user = User.objects.get(pk=3)
-
             candidate = FactoryGetObject.find_object(Candidate, user=user)
             serializer = CandidateResumePatchV2Serializer(candidate.resume, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
-            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+            # candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             if "email" in serializer.validated_data:
                 email = serializer.validated_data.pop("email")
                 candidate.email = email
