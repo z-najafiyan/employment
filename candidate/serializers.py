@@ -190,7 +190,7 @@ class CandidatePersonalInfoGETSerializer(serializers.ModelSerializer):
     gender = serializers.SerializerMethodField()
     marital_status = serializers.SerializerMethodField()
     military_status = serializers.SerializerMethodField()
-
+    category=CategoryResponseSerializer()
 
     class Meta:
         model = PersonalInfo
