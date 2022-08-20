@@ -157,7 +157,9 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["GET", "PATCH"], detail=False)
     def resume(self, request, ):
         if request.method == "GET":
-            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
+            # user=request.user
+            user=User.objects.get(pk=3)
+            candidate = FactoryGetObject.find_object(Candidate, user=user)
             serializer = CandidateResumeGETSerializer(candidate.resume)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
@@ -466,6 +468,7 @@ class CandidateView(viewsets.ModelViewSet):
     def my_announcements(self, request):
         state = request.GET.get("state", None)
         user = User.objects.get(pk=3)
+        # user = User.objects.get(pk=1)
         announcements = Announcement.objects.filter(applicant__candidate__user=user)
 
         # if state and state == "all":
@@ -489,9 +492,10 @@ class CandidateView(viewsets.ModelViewSet):
         announcement = FactoryGetObject.find_object(Announcement, pk=pk)
         # user=request.user
         user = User.objects.get(pk=3)
+
         candidate = FactoryGetObject.find_object(Candidate, user=user)
         data = {'candidate': candidate.id}
-        application=Announcement.objects.filter(applicant__announcement=candidate)
+        application=announcement.applicant.filter(candidate=candidate)
         if application:
             return Response({'message':"You have applied for registration"},status=status.HTTP_200_OK)
         serializer = CandidateApplicantCreateSerializer(data=data)
