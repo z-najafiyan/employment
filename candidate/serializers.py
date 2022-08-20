@@ -108,7 +108,7 @@ class CandidateJobPreferencePostSerializer(serializers.ModelSerializer):
 class CandidateLanguagePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = ["id", "name", "mastery_level",]
+        fields = ["id", "name", "mastery_level", ]
 
 
 class CandidateLanguageGetSerializer(serializers.ModelSerializer):
@@ -186,11 +186,11 @@ class CandidateEducationGETSerializer(serializers.ModelSerializer):
 
 class CandidatePersonalInfoGETSerializer(serializers.ModelSerializer):
     # province = ProvinceResponseSerializer()
-    image=serializers.CharField(source="link")
+    image = serializers.CharField(source="link")
     gender = serializers.SerializerMethodField()
     marital_status = serializers.SerializerMethodField()
     military_status = serializers.SerializerMethodField()
-    category=CategoryResponseSerializer()
+    category = CategoryResponseSerializer()
 
     class Meta:
         model = PersonalInfo
@@ -207,6 +207,7 @@ class CandidatePersonalInfoGETSerializer(serializers.ModelSerializer):
             return {"en_name": obj.marital_status,
                     "fa_name": obj.get_marital_status_display()}
         return None
+
     def get_military_status(self, obj):
         if obj.military_status:
             return {"en_name": obj.military_status,
@@ -305,17 +306,22 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
     city = CityResponseSerializer()
     creation_date = serializers.IntegerField(source="creation_date_ts", allow_null=True)
     type_cooperation = serializers.SerializerMethodField()
+    applicant = serializers.SerializerMethodField()
 
     class Meta:
         model = Announcement
         fields = ["id", "category", "creation_date", "title", "province", "city", "type_cooperation", "minimum_salary",
-                  "company"]
+                  "company","applicant"]
 
     def get_type_cooperation(self, obj):
         if obj.type_cooperation:
             return {"en_name": obj.type_cooperation,
                     "fa_name": obj.get_type_cooperation_display()}
         return None
+
+    def get_applicant(self, obj):
+        announcements = Announcement.objects.filter(applicant__candidate__user=self.context["user"], pk=obj.pk).first()
+        return {"applicant_status": announcements.get_applicant_status_display()}
 
 
 class CandidateCompanyDetailSerializer(serializers.ModelSerializer):
@@ -384,14 +390,14 @@ class CandidateAnnouncementPatchSerializer(WritableNestedModelSerializer):
 
 
 class CandidateResumePatchV2Serializer(WritableNestedModelSerializer):
-    education = CandidateEducationPOSTSerializer(many=True,allow_null=True,partial=True)
-    personal_info = CandidatePersonalInfoPostSerializer(allow_null=True,partial=True)
-    professional_skill = CandidateProfessionalSkillSerializer(many=True,allow_null=True,partial=True)
-    job_preferences = CandidateJobPreferencePostSerializer(allow_null=True,partial=True)
-    work_experience = CandidateWorkExperiencePostSerializer(many=True,allow_null=True,partial=True)
-    language = CandidateLanguagePostSerializer(many=True,allow_null=True,partial=True)
-    email = serializers.EmailField(allow_null=True,)
-    mobile = serializers.CharField(max_length=11,allow_null=True)
+    education = CandidateEducationPOSTSerializer(many=True, allow_null=True, partial=True)
+    personal_info = CandidatePersonalInfoPostSerializer(allow_null=True, partial=True)
+    professional_skill = CandidateProfessionalSkillSerializer(many=True, allow_null=True, partial=True)
+    job_preferences = CandidateJobPreferencePostSerializer(allow_null=True, partial=True)
+    work_experience = CandidateWorkExperiencePostSerializer(many=True, allow_null=True, partial=True)
+    language = CandidateLanguagePostSerializer(many=True, allow_null=True, partial=True)
+    email = serializers.EmailField(allow_null=True, )
+    mobile = serializers.CharField(max_length=11, allow_null=True)
 
     class Meta:
         model = Resume
