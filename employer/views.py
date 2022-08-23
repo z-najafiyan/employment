@@ -14,7 +14,7 @@ from rolepermissions.roles import assign_role
 from candidate.models import Candidate
 from common.models import User
 from employer.filters import ApplicantFilter
-from employer.models import Company, Employer, Announcement, Applicant, StatusLog
+from employer.models import Company, Employer, Announcement, Applicant, StatusLog, Score
 from employer.serializers import (EmployerUserPostSerializer, EmployerCompanyPostSerializer,
                                   EmployerCompanyGetSerializer, EmployerAnnouncementPostSerializer,
                                   EmployerAnnouncementListSerializer, EmployerApplicantGetSerializer,
@@ -27,6 +27,7 @@ from other_files.permissions import IsEmployer
 
 class EmployerView(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
+
     # def get_permissions(self):
     #     if self.action in ["sing_up", "sing_in"]:
     #         self.permission_classes = [AllowAny]
@@ -51,10 +52,11 @@ class EmployerView(viewsets.ModelViewSet):
             'access': str(refresh.access_token),
         }
         return Response(res, status=status.HTTP_201_CREATED)
+
     @swagger_auto_schema(**swagger_kwargs["sing_in"])
     @action(methods=["POST"], detail=False)
     def sing_in(self, request):
-        serializer=EmployerUserPostV2Serializer(data=request.data)
+        serializer = EmployerUserPostV2Serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]
         password = serializer.validated_data["password"]
@@ -74,8 +76,9 @@ class EmployerView(viewsets.ModelViewSet):
             'access': str(refresh.access_token),
         }
         return Response(res, status=status.HTTP_200_OK)
+
     @action(methods=["POST"], detail=False)
-    def sign(self,request):
+    def sign(self, request):
         serializer = EmployerUserPostV2Serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]
@@ -113,19 +116,18 @@ class EmployerView(viewsets.ModelViewSet):
             res.update(EmployerSerializer(employer))
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-
     @swagger_auto_schema(**swagger_kwargs["employer"])
     @action(methods=["GET"], detail=False)
     def employer(self, request):
         user = User.objects.get(pk=2)
         # user = request.user
-        employer = FactoryGetObject.find_object(Employer,user=user )
+        employer = FactoryGetObject.find_object(Employer, user=user)
         serializer = EmployerSerializer(employer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["company_get"])
     @swagger_auto_schema(**swagger_kwargs["company_patch"])
-    @action(methods=["GET", "PATCH"], detail=True,)
+    @action(methods=["GET", "PATCH"], detail=True, )
     def company(self, request, pk):
         if request.method == "PATCH":
             company = FactoryGetObject.find_object(Company, pk=pk)
@@ -145,8 +147,8 @@ class EmployerView(viewsets.ModelViewSet):
     @action(methods=["POST", "GET", "PATCH"], detail=True)
     def announcement(self, request, pk):
         if request.method == "POST":
-            user = User.objects.get(pk=2)
-
+            user = User.objects.get(pk=1)
+            # user=request.user
             employer = FactoryGetObject.find_object(Employer, user=user)
             serializer = EmployerAnnouncementPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -162,14 +164,14 @@ class EmployerView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == "GET":
             state = request.GET.get("state")
-            announcement_type=request.GET.get("type")
+            announcement_type = request.GET.get("type")
             if state == "list":
-                user = User.objects.get(pk=2)
+                user = User.objects.get(pk=1)
                 # user=request.user
                 employer = FactoryGetObject.find_object(Employer, user=user)
-                announcements = Announcement.objects.filter(status_name=announcement_type,company=employer.company)
+                announcements = Announcement.objects.filter(status_name=announcement_type, company=employer.company)
                 page = self.paginate_queryset(announcements)
-                res = self.get_paginated_response(EmployerAnnouncementListSerializer(page,many=True).data).data
+                res = self.get_paginated_response(EmployerAnnouncementListSerializer(page, many=True).data).data
                 return Response(res, status=status.HTTP_200_OK)
             elif state == "detail":
                 announcement = FactoryGetObject.find_object(Announcement, pk=pk)
@@ -187,12 +189,12 @@ class EmployerView(viewsets.ModelViewSet):
             applicants = announcement.applicant.all()
             data = request.query_params
             applicant_filter = ApplicantFilter(queryset=applicants, data=data).qs
-            page=self.paginate_queryset(applicant_filter)
+            page = self.paginate_queryset(applicant_filter)
             res = self.get_paginated_response(EmployerApplicantGetSerializer(applicant_filter,
                                                                              many=True).data).data
             return Response(res)
         else:
-            user = User.objects.get(pk=2)
+            user = User.objects.get(pk=1)
             announcement = FactoryGetObject.find_object(Announcement, pk=pk)
             applicant = FactoryGetObject.find_object(Applicant, pk=request.data["id"])
             serializer = EmployerApplicantPatchSerializer(applicant, data=request.data)
@@ -209,8 +211,8 @@ class EmployerView(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=True)
     def candidate(self, request, pk):
         applicant = FactoryGetObject.find_object(Applicant, pk=pk)
-        candidate=applicant.candidate
-        serializer = EmployerCandidateDeleteSerializer(candidate,context={"applicant":applicant})
+        candidate = applicant.candidate
+        serializer = EmployerCandidateDeleteSerializer(candidate, context={"applicant": applicant})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["rejected"])
@@ -274,4 +276,40 @@ class EmployerView(viewsets.ModelViewSet):
             announcement=announcement,
             applicant_status="awaiting_status",
             user=user)
+        return Response({"message": "done"}, status=status.HTTP_200_OK)
+
+    @action(methods=["GET"], detail=True)
+    def weak(self, request, pk):
+        applicant = FactoryGetObject.find_object(Applicant, pk=pk)
+        announcement = Announcement.objects.filter(applicant=applicant).first()
+        score, flag = Score.objects.get_or_create(
+            announcement=announcement,
+            candidate=applicant.candidate, )
+        score.score = "weak"
+        score.user = request.data
+        score.save()
+        return Response({"message": "done"}, status=status.HTTP_200_OK)
+
+    @action(methods=["GET"], detail=True)
+    def medium(self, request,pk):
+        applicant = FactoryGetObject.find_object(Applicant, pk=pk)
+        announcement = Announcement.objects.filter(applicant=applicant).first()
+        score, flag = Score.objects.get_or_create(
+            announcement=announcement,
+            candidate=applicant.candidate, )
+        score.score = "medium"
+        score.user = request.data
+        score.save()
+        return Response({"message": "done"}, status=status.HTTP_200_OK)
+
+    @action(methods=["GET"], detail=True)
+    def excellent(self, request,pk):
+        applicant = FactoryGetObject.find_object(Applicant, pk=pk)
+        announcement = Announcement.objects.filter(applicant=applicant).first()
+        score, flag = Score.objects.get_or_create(
+            announcement=announcement,
+            candidate=applicant.candidate, )
+        score.score = "excellent"
+        score.user = request.data
+        score.save()
         return Response({"message": "done"}, status=status.HTTP_200_OK)
