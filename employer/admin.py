@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from employer.models import (Activity,
                              Company,
-                             Employer, Applicant, Announcement, StatusLog,
+                             Employer, Applicant, Announcement, StatusLog, Score,
                              )
 
 
@@ -90,3 +90,10 @@ class StatusLogAdmin(admin.ModelAdmin):
             return obj.announcement.id
         except AttributeError:
             return None
+
+
+@admin.register(Score)
+class ScoreAdmin(admin.ModelAdmin):
+    list_display = ["id", "candidate", "announcement", "score"]
+    list_display_links = ["id", "candidate", "announcement", "score"]
+    search_fields = ["id", "candidate", "announcement", "score"]

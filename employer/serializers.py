@@ -1,9 +1,10 @@
+from django.db.models import Avg, Q
 from rest_framework import serializers
 
 from candidate.models import Candidate, Resume, Education, PersonalInfo, WorkExperience, JobPreference, JobBenefits, \
     ProfessionalSkill, Language
 from common.models import User, Category, Skill
-from employer.models import Company, Announcement, StatusLog, Applicant, Employer
+from employer.models import Company, Announcement, StatusLog, Applicant, Employer, Score
 from other_files.response_serialzer import CityResponseSerializer, ProvinceResponseSerializer, \
     ActivityResponseSerializer, UserResponseSerializer, CategoryResponseSerializer
 
@@ -358,9 +359,10 @@ class EmployerCandidateDeleteSerializer(serializers.ModelSerializer):
     resume = EmployerResumeDetailSerializer()
     applicant_status=serializers.SerializerMethodField()
     created_date_time=serializers.SerializerMethodField()
+    score=serializers.SerializerMethodField()
     class Meta:
         model = Candidate
-        fields = ["user","resume","mobile","email","applicant_status","id","created_date_time"]
+        fields = ["user","resume","mobile","email","applicant_status","id","created_date_time","score"]
     def get_applicant_status(self,obj):
         applicant=self.context["applicant"]
         if applicant.applicant_status:
@@ -372,3 +374,15 @@ class EmployerCandidateDeleteSerializer(serializers.ModelSerializer):
         if applicant.created_date_time:
             return applicant.created_date_time_ts
         return None
+    def get_score(self,obj):
+        score_obj=Score.objects.filter(candidate=obj).aggregate(avg=Avg("score"))
+        if score_obj["avg"] > 0 and score_obj["avg"] <= 20:
+            return "ضعیف"
+        elif score_obj["avg"] > 20 and score_obj["avg"] <= 60:
+            return "متوسط"
+
+        elif score_obj["avg"] > 60 and score_obj["avg"] <= 100:
+            return "خوب"
+
+        else:
+            return "تعین نشده"
