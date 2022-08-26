@@ -165,5 +165,5 @@ class StatusLog(models.Model):
 class Score(models.Model):
     announcement=models.ForeignKey(Announcement,related_name="scores",on_delete=models.CASCADE)
     candidate = models.ForeignKey(Candidate, related_name="scores", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="scores", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="scores", on_delete=models.CASCADE,null=True)
     score = models.IntegerField(choices=[(20, "ضعیف"), (50, "متوسط"), (100, "خوب")],null=True)
