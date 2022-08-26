@@ -120,8 +120,8 @@ class EmployerView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["employer"])
     @action(methods=["GET"], detail=False)
     def employer(self, request):
-        user = User.objects.get(pk=2)
-        # user = request.user
+        # user = User.objects.get(pk=2)
+        user = request.user
         employer = FactoryGetObject.find_object(Employer, user=user)
         serializer = EmployerSerializer(employer)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -137,8 +137,8 @@ class EmployerView(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == "GET":
-            # user = request.user
-            user = User.objects.get(pk=2)
+            user = request.user
+            # user = User.objects.get(pk=2)
             company = FactoryGetObject.find_object(Company, pk=pk)
             serializer = EmployerCompanyGetSerializer(company)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -148,12 +148,12 @@ class EmployerView(viewsets.ModelViewSet):
     @action(methods=["POST", "GET", "PATCH"], detail=True)
     def announcement(self, request, pk):
         if request.method == "POST":
-            user = User.objects.get(pk=1)
-            # user=request.user
+            # user = User.objects.get(pk=1)
+            user=request.user
             employer = FactoryGetObject.find_object(Employer, user=user)
             serializer = EmployerAnnouncementPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            user = User.objects.get(pk=2)
+            # user = User.objects.get(pk=2)
 
             serializer.save(creator_user=user, company=employer.company)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -167,8 +167,8 @@ class EmployerView(viewsets.ModelViewSet):
             state = request.GET.get("state")
             announcement_type = request.GET.get("type")
             if state == "list":
-                user = User.objects.get(pk=1)
-                # user=request.user
+                # user = User.objects.get(pk=1)
+                user=request.user
                 employer = FactoryGetObject.find_object(Employer, user=user)
                 announcements = Announcement.objects.filter(status_name=announcement_type, company=employer.company)
                 page = self.paginate_queryset(announcements)
@@ -195,7 +195,8 @@ class EmployerView(viewsets.ModelViewSet):
                                                                              many=True).data).data
             return Response(res)
         else:
-            user = User.objects.get(pk=1)
+            # user = User.objects.get(pk=1)
+            user=request.user
             announcement = FactoryGetObject.find_object(Announcement, pk=pk)
             applicant = FactoryGetObject.find_object(Applicant, pk=request.data["id"])
             serializer = EmployerApplicantPatchSerializer(applicant, data=request.data)
@@ -227,7 +228,8 @@ class EmployerView(viewsets.ModelViewSet):
             candidate=applicant.candidate,
             announcement=announcement,
             applicant_status="rejected",
-            user=User.objects.get(pk=2), )
+            user=request.user)
+            # user=User.objects.get(pk=2), )
         return Response({"message": "done"}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["confirmation"])
@@ -237,7 +239,8 @@ class EmployerView(viewsets.ModelViewSet):
         announcement = Announcement.objects.filter(applicant=applicant).first()
         applicant.applicant_status = "confirmation_for_interview"
         applicant.save()
-        user = User.objects.get(pk=2)
+        # user = User.objects.get(pk=2)
+        user=request.user
 
         _ = StatusLog.objects.create(
             candidate=applicant.candidate,
@@ -254,7 +257,8 @@ class EmployerView(viewsets.ModelViewSet):
 
         applicant.applicant_status = "hired"
         applicant.save()
-        user = User.objects.get(pk=2)
+        # user = User.objects.get(pk=2)
+        user=request.user
         _ = StatusLog.objects.create(
             candidate=applicant.candidate,
             announcement=announcement,
@@ -269,8 +273,8 @@ class EmployerView(viewsets.ModelViewSet):
         announcement = Announcement.objects.filter(applicant=applicant).first()
         applicant.applicant_status = "awaiting_status"
         applicant.save()
-        # user = request.user
-        user = User.objects.get(pk=2)
+        user = request.user
+        # user = User.objects.get(pk=2)
 
         _ = StatusLog.objects.create(
             candidate=applicant.candidate,
@@ -287,7 +291,7 @@ class EmployerView(viewsets.ModelViewSet):
             announcement=announcement,
             candidate=applicant.candidate, )
         score.score = "weak"
-        score.user = request.data
+        score.user = request.user
         score.save()
         return Response({"message": "done"}, status=status.HTTP_200_OK)
 
@@ -299,7 +303,7 @@ class EmployerView(viewsets.ModelViewSet):
             announcement=announcement,
             candidate=applicant.candidate, )
         score.score = "medium"
-        score.user = request.data
+        score.user = request.user
         score.save()
         return Response({"message": "done"}, status=status.HTTP_200_OK)
 
@@ -311,6 +315,6 @@ class EmployerView(viewsets.ModelViewSet):
             announcement=announcement,
             candidate=applicant.candidate, )
         score.score = "excellent"
-        score.user = request.data
+        score.user = request.user
         score.save()
         return Response({"message": "done"}, status=status.HTTP_200_OK)
