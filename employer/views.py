@@ -290,7 +290,7 @@ class EmployerView(viewsets.ModelViewSet):
         score, flag = Score.objects.get_or_create(
             announcement=announcement,
             candidate=applicant.candidate, )
-        score.score = "weak"
+        score.score = 20
         score.user = request.user
         score.save()
         return Response({"message": "done"}, status=status.HTTP_200_OK)
@@ -302,7 +302,7 @@ class EmployerView(viewsets.ModelViewSet):
         score, flag = Score.objects.get_or_create(
             announcement=announcement,
             candidate=applicant.candidate, )
-        score.score = "medium"
+        score.score = 50
         score.user = request.user
         score.save()
         return Response({"message": "done"}, status=status.HTTP_200_OK)
@@ -314,7 +314,7 @@ class EmployerView(viewsets.ModelViewSet):
         score, flag = Score.objects.get_or_create(
             announcement=announcement,
             candidate=applicant.candidate, )
-        score.score = "excellent"
+        score.score = 100
         score.user = request.user
         score.save()
         return Response({"message": "done"}, status=status.HTTP_200_OK)
