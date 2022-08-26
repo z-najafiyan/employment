@@ -93,8 +93,9 @@ class CandidateView(viewsets.ModelViewSet):
     def sing(self, request):
         email = request.data["email"]
         password = request.data["password"]
-        user = User.objects.get(email=email, )
+        user = User.objects.filter(email=email, )
         if user:
+            user=user.first()
             # sign in
             if not user.check_password(password):
                 return Response([{"user": "password not valid"}], status=status.HTTP_404_NOT_FOUND)
