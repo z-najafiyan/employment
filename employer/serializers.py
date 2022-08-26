@@ -376,7 +376,9 @@ class EmployerCandidateDeleteSerializer(serializers.ModelSerializer):
         return None
     def get_score(self,obj):
         score_obj=Score.objects.filter(candidate=obj).aggregate(avg=Avg("score"))
-        if score_obj["avg"] > 0 and score_obj["avg"] <= 20:
+        if not score_obj["avg"]:
+            return "_"
+        elif score_obj["avg"] > 0 and score_obj["avg"] <= 20:
             return "ضعیف"
         elif score_obj["avg"] > 20 and score_obj["avg"] <= 60:
             return "متوسط"
@@ -385,4 +387,4 @@ class EmployerCandidateDeleteSerializer(serializers.ModelSerializer):
             return "خوب"
 
         else:
-            return "تعین نشده"
+            return "_"
