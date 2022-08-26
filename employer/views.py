@@ -76,15 +76,16 @@ class EmployerView(viewsets.ModelViewSet):
             'access': str(refresh.access_token),
         }
         return Response(res, status=status.HTTP_200_OK)
-
+    @swagger_auto_schema(**swagger_kwargs["sing_in"])
     @action(methods=["POST"], detail=False)
     def sign(self, request):
         serializer = EmployerUserPostV2Serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]
         password = serializer.validated_data["password"]
-        user = User.objects.get(email=email)
+        user = User.objects.filter(email=email)
         if user:
+            user=user.first()
             if not user.check_password(password):
                 return Response([{"user": "password not valid"}], status=status.HTTP_404_NOT_FOUND)
             try:
@@ -97,8 +98,8 @@ class EmployerView(viewsets.ModelViewSet):
                 'access': str(refresh.access_token),
             }
             employer = FactoryGetObject.find_object(Employer, user=user)
-            res.update(EmployerSerializer(employer))
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            res.update(EmployerSerializer(employer).data)
+            return Response(res, status=status.HTTP_200_OK)
         else:
             serializer = EmployerUserPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -113,8 +114,8 @@ class EmployerView(viewsets.ModelViewSet):
                 'access': str(refresh.access_token),
             }
             employer = FactoryGetObject.find_object(Employer, user=user)
-            res.update(EmployerSerializer(employer))
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            res.update(EmployerSerializer(employer).data)
+            return Response(res, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["employer"])
     @action(methods=["GET"], detail=False)
