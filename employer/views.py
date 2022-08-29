@@ -148,13 +148,10 @@ class EmployerView(viewsets.ModelViewSet):
     @action(methods=["POST", "GET", "PATCH"], detail=True)
     def announcement(self, request, pk):
         if request.method == "POST":
-            # user = User.objects.get(pk=1)
             user=request.user
             employer = FactoryGetObject.find_object(Employer, user=user)
             serializer = EmployerAnnouncementPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            # user = User.objects.get(pk=2)
-
             serializer.save(creator_user=user, company=employer.company)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == "PATCH":

@@ -116,6 +116,7 @@ class JobPreference(models.Model):
     province = models.ForeignKey(Province, null=True, blank=True, related_name="job_preferences",
                                  related_query_name="job_preference", on_delete=models.CASCADE)
     type_cooperation = models.CharField(choices=TYPE_COOPERATION, max_length=500, null=True, blank=True)
+
     mastery_level = models.CharField(choices=LEVEL, max_length=500, null=True, blank=True)
     minimum_salary = models.CharField(max_length=500, choices=SALARY, null=True, blank=True)
     degree_of_educations = models.CharField(choices=DEGREE_OF_EDUCATIONS, max_length=500, null=True, blank=True)

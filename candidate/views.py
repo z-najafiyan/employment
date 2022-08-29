@@ -99,7 +99,6 @@ class CandidateView(viewsets.ModelViewSet):
             # sign in
             if not user.check_password(password):
                 return Response([{"user": "password not valid"}], status=status.HTTP_404_NOT_FOUND)
-
             try:
                 _ = Candidate.objects.get(user=user)
             except ObjectDoesNotExist:
@@ -158,8 +157,7 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["GET", "PATCH"], detail=False)
     def resume(self, request, ):
         if request.method == "GET":
-            # user=request.user
-            user=User.objects.get(pk=3)
+            user=request.user
             candidate = FactoryGetObject.find_object(Candidate, user=user)
             serializer = CandidateResumeGETSerializer(candidate.resume)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -170,8 +168,7 @@ class CandidateView(viewsets.ModelViewSet):
             # obj = serializer.save()
             # serializer_res = CandidateResumeGETSerializer(obj)
             # return Response(serializer_res.data, status=status.HTTP_200_OK)
-            user = User.objects.get(pk=3)
-            candidate = FactoryGetObject.find_object(Candidate, user=user)
+            candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             serializer = CandidateResumePatchV2Serializer(candidate.resume, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             # candidate = FactoryGetObject.find_object(Candidate, user=request.user)
@@ -466,7 +463,8 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False)
     def my_announcements(self, request):
         state = request.GET.get("state", None)
-        user = User.objects.get(pk=3)
+        user=request.user
+        # user = User.objects.get(pk=3)
         # user = User.objects.get(pk=1)
         announcements = Announcement.objects.filter(applicant__candidate__user=user)
 
@@ -489,8 +487,8 @@ class CandidateView(viewsets.ModelViewSet):
     @action(methods=["patch"], detail=True)
     def send_resume(self, request, pk):
         announcement = FactoryGetObject.find_object(Announcement, pk=pk)
-        # user=request.user
-        user = User.objects.get(pk=3)
+        user=request.user
+        # user = User.objects.get(pk=3)
 
         candidate = FactoryGetObject.find_object(Candidate, user=user)
         data = {'candidate': candidate.id}

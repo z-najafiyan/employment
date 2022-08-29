@@ -18,7 +18,6 @@ class AnnouncementFilter(rest_framework.FilterSet):
     status_name = rest_framework.CharFilter(lookup_expr="icontains")
     active_time = rest_framework.CharFilter(lookup_expr="icontains")
     several_variable = rest_framework.CharFilter(method="several_variable_filter")
-
     def category_filter(self, queryset, name, value, ):
         if not value.isnumeric():
             return queryset.filter(category__name=value)
@@ -40,7 +39,6 @@ class AnnouncementFilter(rest_framework.FilterSet):
                                    Q(title__icontains=value) |
                                    Q(description__icontains=value)).distinct()
         return queryset
-
     class Meta:
         model = Announcement
         fields = ["title", "category", "province", "city", "type_cooperation", "minimum_salary", "degree_of_educations",
