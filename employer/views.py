@@ -138,7 +138,6 @@ class EmployerView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == "GET":
             user = request.user
-            # user = User.objects.get(pk=2)
             company = FactoryGetObject.find_object(Company, pk=pk)
             serializer = EmployerCompanyGetSerializer(company)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -164,7 +163,6 @@ class EmployerView(viewsets.ModelViewSet):
             state = request.GET.get("state")
             announcement_type = request.GET.get("type")
             if state == "list":
-                # user = User.objects.get(pk=1)
                 user=request.user
                 employer = FactoryGetObject.find_object(Employer, user=user)
                 announcements = Announcement.objects.filter(status_name=announcement_type, company=employer.company)

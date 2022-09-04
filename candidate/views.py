@@ -133,7 +133,6 @@ class CandidateView(viewsets.ModelViewSet):
             candidate = FactoryGetObject.find_object(Candidate, user=user)
             res.update(CandidateSerializer(candidate).data)
             return Response(res, status=status.HTTP_200_OK)
-
     @swagger_auto_schema(**swagger_kwargs["user"])
     @action(methods=["PATCH"], detail=False)
     def user(self, request):

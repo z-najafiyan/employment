@@ -153,4 +153,5 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=10),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=10),
 }
-IMAGE_URL_SERVE = "http://37.32.31.190/"
+# IMAGE_URL_SERVE = "http://37.32.31.190/"
+IMAGE_URL_SERVE = "http://127.0.0.1:8000/"
