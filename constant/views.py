@@ -35,8 +35,6 @@ CATEGORY = [
     ("designer", "Designer"),
     ("backend", "Backend developer"),
     ("frontend", "Frontend developer"),
-    # ("full_stack","Full stack developer"),
-    # ("manager","Manager"),
 ]
 YEARS_WORK_EXPERIENCE=[
     ("unlimited","بدون محدودیت سابقه کار"),
@@ -87,7 +85,6 @@ MASTERY_LEVEL = [
     ("beginner", "مبتدی"),
     ("medium", "متوسط"),
     ("professional", "حرفه ای"),
-    # ("mother_tongue", "زبان مادری"),
 ]
 
 LANGUAGE_NAME = [
@@ -142,7 +139,7 @@ NUMBER_EMPLOYEES=[
 
 ]
 
-class ConstantView(viewsets.ModelViewSet):
+class ConstantView(viewsets.GenericViewSet):
     permission_classes = [AllowAny]
 
     @staticmethod

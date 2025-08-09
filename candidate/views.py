@@ -1,4 +1,3 @@
-# Create your views here.
 from django.core.exceptions import ObjectDoesNotExist
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
@@ -31,16 +30,8 @@ from employer.models import Announcement, Company
 from other_files.helper import FactoryGetObject
 
 
-class CandidateView(viewsets.ModelViewSet):
+class CandidateView(viewsets.GenericViewSet):
     permission_classes = [AllowAny]
-
-    # def get_permissions(self):
-    # if self.action in ["sing_up", "sing_in", "announcement_list", "new_announcement"]:
-    #     self.permission_classes = [AllowAny]
-    # else:
-    #     self.permission_classes = [IsAuthenticated, IsCandidate]
-    #
-    # return super(CandidateView, self).get_permissions()
 
     @swagger_auto_schema(**swagger_kwargs["sing_up"])
     @action(methods=["POST"], detail=False)
@@ -96,7 +87,6 @@ class CandidateView(viewsets.ModelViewSet):
         user = User.objects.filter(email=email, )
         if user:
             user=user.first()
-            # sign in
             if not user.check_password(password):
                 return Response([{"user": "password not valid"}], status=status.HTTP_404_NOT_FOUND)
             try:
@@ -112,7 +102,6 @@ class CandidateView(viewsets.ModelViewSet):
             res.update(CandidateSerializer(candidate).data)
             return Response(res, status=status.HTTP_200_OK)
         else:
-            # sign up
             serializer = CandidateUserSingInSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             user = serializer.save(username=serializer.validated_data["email"])
@@ -161,16 +150,9 @@ class CandidateView(viewsets.ModelViewSet):
             serializer = CandidateResumeGETSerializer(candidate.resume)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            # candidate = FactoryGetObject.find_object(Candidate, user=request.user)
-            # serializer = CandidateResumePatchSerializer(candidate.resume, data=request.data, partial=True)
-            # serializer.is_valid(raise_exception=True)
-            # obj = serializer.save()
-            # serializer_res = CandidateResumeGETSerializer(obj)
-            # return Response(serializer_res.data, status=status.HTTP_200_OK)
             candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             serializer = CandidateResumePatchV2Serializer(candidate.resume, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
-            # candidate = FactoryGetObject.find_object(Candidate, user=request.user)
             if "email" in serializer.validated_data:
                 email = serializer.validated_data.pop("email")
                 candidate.email = email
@@ -229,8 +211,6 @@ class CandidateView(viewsets.ModelViewSet):
                 candidate = FactoryGetObject.find_object(Candidate, user=request.user)
                 if candidate.resume:
                     education = candidate.resume.education.all()
-                    # page = self.paginate_queryset(education)
-                    # res = self.get_paginated_response(data=CandidateEducationGETSerializer(page, many=True).data).data
                     res = CandidateEducationGETSerializer(education, many=True).data
                     return Response(res)
             elif state == "detail":
@@ -282,8 +262,6 @@ class CandidateView(viewsets.ModelViewSet):
                 candidate = FactoryGetObject.find_object(Candidate, user=request.user)
                 if candidate.resume:
                     skill = candidate.resume.professional_skill.all()
-                    # page = self.paginate_queryset(education)
-                    # res = self.get_paginated_response(data=CandidateSkillSerializer(page, many=True).data).data
                     res = CandidateProfessionalSkillGetSerializer(skill, many=True).data
                     return Response(res)
             elif state == "detail":
@@ -369,8 +347,7 @@ class CandidateView(viewsets.ModelViewSet):
                 if candidate.resume:
                     work_experience = candidate.resume.work_experience.all()
                     res = CandidateWorkExperienceGetSerializer(work_experience, many=True).data
-                    # page = self.paginate_queryset(education)
-                    # res = self.get_paginated_response(data=(page, many=True).data).data
+
                     return Response(res)
                 else:
                     return Response(list())
@@ -388,15 +365,6 @@ class CandidateView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["personal_info_delete"])
     @action(methods=["GET", "PATCH"], detail=True)
     def personal_info(self, request, pk):
-        # if request.method == "POST":
-        #     serializer = CandidatePersonalInfoPostSerializer(data=request.data)
-        #     serializer.is_valid(raise_exception=True)
-        #     resume=serializer.validated_data.pop("resumes")
-        #     instance=serializer.save()
-        #     resume.personal_info=instance
-        #     resume.save()
-        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         if request.method == "PATCH":
             personal_info = FactoryGetObject.find_object(PersonalInfo, pk=pk)
             serializer = CandidatePersonalInfoPostSerializer(data=request.data, instance=personal_info,
@@ -409,10 +377,6 @@ class CandidateView(viewsets.ModelViewSet):
             personal_info = FactoryGetObject.find_object(PersonalInfo, pk=pk)
             res = CandidatePersonalInfoGETSerializer(personal_info).data
             return Response(res)
-        # else:
-        #     personal_info = FactoryGetObject.find_object(PersonalInfo, pk=pk)
-        #     personal_info.delete()
-        #     return Response({'message': "done"}, status=status.HTTP_204_NO_CONTENT)
 
     @swagger_auto_schema(**swagger_kwargs["announcement_list"])
     @action(methods=["GET"], detail=False)
@@ -446,10 +410,6 @@ class CandidateView(viewsets.ModelViewSet):
             serializer = CandidateMarkedAnnouncementPostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             marked_announcement, _ = MarkedAnnouncement.objects.get_or_create(candidate__user=request.user)
-            # mark_filter=marked_announcement.announcement.filter(announcement=serializer.validated_data["announcement"])
-            # if mark_filter :
-            #     marked_announcement.announcement.remove(serializer.validated_data["announcement"])
-            # else:
             marked_announcement.announcement.add(serializer.validated_data["announcement"])
             return Response({"message": "done"}, status=status.HTTP_201_CREATED)
         else:
@@ -463,15 +423,8 @@ class CandidateView(viewsets.ModelViewSet):
     def my_announcements(self, request):
         state = request.GET.get("state", None)
         user=request.user
-        # user = User.objects.get(pk=3)
-        # user = User.objects.get(pk=1)
         announcements = Announcement.objects.filter(applicant__candidate__user=user)
 
-        # if state and state == "all":
-        #     announcements = Announcement.objects.filter(applicant__candidate__user=user)
-        # else:
-        #     announcements = Announcement.objects.filter(applicant__candidate__user=user,
-        #                                                 applicant__applicant_status=state)
         page = self.paginate_queryset(announcements)
         response = self.get_paginated_response(CandidateAnnouncementListSerializer(page,context={"user":user}, many=True).data).data
         return Response(response, status=status.HTTP_200_OK)
@@ -487,7 +440,6 @@ class CandidateView(viewsets.ModelViewSet):
     def send_resume(self, request, pk):
         announcement = FactoryGetObject.find_object(Announcement, pk=pk)
         user=request.user
-        # user = User.objects.get(pk=3)
 
         candidate = FactoryGetObject.find_object(Candidate, user=user)
         data = {'candidate': candidate.id}

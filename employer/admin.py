@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
 from employer.models import (Activity,
                              Company,
                              Employer, Applicant, Announcement, StatusLog, Score,

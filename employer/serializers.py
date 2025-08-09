@@ -10,7 +10,6 @@ from other_files.response_serialzer import CityResponseSerializer, ProvinceRespo
 
 
 class EmployerUserPostSerializer(serializers.ModelSerializer):
-    # sing_up
     class Meta:
         model = User
         fields = ["email", "first_name", "last_name", "password"]
@@ -30,7 +29,6 @@ class EmployerUserPostSerializer(serializers.ModelSerializer):
 
 
 class EmployerUserPostV2Serializer(serializers.ModelSerializer):
-    # sing_in
     class Meta:
         model = User
         fields = ["email", "password"]
@@ -208,7 +206,6 @@ class EmployerEducationDetailSerializer(serializers.ModelSerializer):
 
 
 class EmployerPersonalInfoDetailSerializer(serializers.ModelSerializer):
-    # province = ProvinceResponseSerializer()
     category = CategoryResponseSerializer()
     gender = serializers.SerializerMethodField()
     marital_status = serializers.SerializerMethodField()
@@ -263,8 +260,6 @@ class EmployerJobPreferencesDetailSerializer(serializers.ModelSerializer):
     minimum_salary = serializers.SerializerMethodField()
     degree_of_educations = serializers.SerializerMethodField()
 
-    # job_benefits = EmployerJobBenefitsDetailSerializer(many=True)
-
     class Meta:
         model = JobPreference
         fields = "__all__"
@@ -304,7 +299,6 @@ class EmployerWorkExperienceDetailSerializer(serializers.ModelSerializer):
 
 
 class EmployerProfessionalSkillDetailSerializer(serializers.ModelSerializer):
-    # skill = EmployerSkillDetailSerializer()
     mastery_level = serializers.SerializerMethodField()
 
     class Meta:

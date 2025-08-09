@@ -5,7 +5,6 @@ from django.db import models
 from common.models import (User, Province, Category, Skill)
 from constant.views import (MARITAL_STATUS, GENDER, GRADE, MASTERY_LEVEL, LANGUAGE_NAME, TYPE_COOPERATION,
                             DEGREE_OF_EDUCATIONS, LEVEL, SALARY, JOB_BENEFITS, MILITARY_SERVICE)
-# Create your models here.
 
 from employment import settings
 
@@ -16,8 +15,6 @@ class Education(models.Model):
     field_of_study = models.CharField(max_length=500,null=True )
     name_university = models.CharField(max_length=500,null=True)
     grade = models.CharField(max_length=100, choices=GRADE,null=True)
-    # start_years = models.CharField(max_length=4)
-    # end_years = models.CharField(max_length=4)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
     is_student = models.BooleanField(default=False)
@@ -31,14 +28,12 @@ class Education(models.Model):
 
     @property
     def start_date_ts(self):
-        if self.start_date:
-            return timestamp(self.start_date) * 1000
-        return None
+        return timestamp(self.start_date) * 1000 if self.start_date else None
+
     @property
     def end_date_ts(self):
-        if self.end_date:
-            return timestamp(self.end_date) * 1000
-        return None
+        return timestamp(self.end_date) * 1000 if self.end_date else None
+
 class Language(models.Model):
     name = models.CharField(choices=LANGUAGE_NAME, max_length=20)
     mastery_level = models.CharField(choices=MASTERY_LEVEL, max_length=20,null=True)
@@ -53,11 +48,6 @@ class Language(models.Model):
 class WorkExperience(models.Model):
     job_title = models.CharField(max_length=500,null=True,blank=True )
     company_name = models.CharField(max_length=1000,null=True)
-    # start_month = models.CharField(max_length=2, choices=MONTH)
-    # start_years = models.CharField(max_length=4, validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
-    # end_month = models.CharField(max_length=2, choices=MONTH,)
-    # end_years = models.CharField(max_length=4, null=True, blank=True,
-    #                              validators=[RegexValidator(r"[1][3-4][0-9][0-9]")])
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
     is_employed = models.BooleanField(default=False)
@@ -70,17 +60,13 @@ class WorkExperience(models.Model):
         ordering = ["-id"]
     @property
     def start_date_ts(self):
-        if self.start_date:
-            return timestamp(self.start_date) * 1000
-        return None
+        return timestamp(self.start_date) * 1000 if self.start_date else None
+
     @property
     def end_date_ts(self):
-        if self.end_date:
-            return timestamp(self.end_date) * 1000
-        return None
+        return timestamp(self.end_date) * 1000 if self.end_date else None
+
 class PersonalInfo(models.Model):
-    # province = models.ForeignKey(Province, null=True, blank=True, related_name="personal_infos",
-    #                              related_query_name="personal_info", on_delete=models.CASCADE)
     category = models.ForeignKey(Category, related_name="personal_infos", related_query_name="personal_info",
                                  on_delete=models.CASCADE, null=True, blank=True
                                  )
@@ -121,7 +107,6 @@ class JobPreference(models.Model):
     minimum_salary = models.CharField(max_length=500, choices=SALARY, null=True, blank=True)
     degree_of_educations = models.CharField(choices=DEGREE_OF_EDUCATIONS, max_length=500, null=True, blank=True)
 
-    # job_benefits = models.ManyToManyField(JobBenefits)
 
     def __str__(self):
         return f"id{self.id}"
@@ -131,8 +116,6 @@ class JobPreference(models.Model):
 
 
 class ProfessionalSkill(models.Model):
-    # skill = models.ForeignKey(Skill, related_name="professional_skills", related_query_name="professional_skill",
-    #                           on_delete=models.CASCADE)
     skill=models.CharField(max_length=500,blank=True)
     mastery_level = models.CharField(choices=MASTERY_LEVEL, max_length=500, null=True, blank=True)
 

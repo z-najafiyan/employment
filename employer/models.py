@@ -4,7 +4,6 @@ import time
 from django.core.validators import MaxValueValidator
 from django.db import models
 
-# Create your models here.
 from candidate.models import Candidate, Skill
 from common.models import (User, City, Province, Category)
 from constant.views import (ANNOUNCEMENT_STATUS,
@@ -112,7 +111,6 @@ class Announcement(models.Model):
     creation_date = models.DateTimeField(auto_now=True)
     creator_user = models.ForeignKey(User, related_name="announcements", related_query_name="announcement",
                                      on_delete=models.CASCADE)
-    # skill = models.ManyToManyField(Skill, )
     description = models.TextField(max_length=10000, null=True, blank=True)
     company = models.ForeignKey(Company, related_name="announcements", related_query_name="announcement",
                                 on_delete=models.CASCADE)
@@ -125,8 +123,6 @@ class Announcement(models.Model):
     def creation_days(self):
         date_now = datetime.datetime.now()
         diff = date_now - self.creation_date
-        # diff_in_day = diff / 3600 * 24
-        # return diff_in_day
         return diff.days
 
     class Meta:

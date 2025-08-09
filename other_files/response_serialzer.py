@@ -30,7 +30,6 @@ class JobBenefitsResponseSerializer(serializers.ModelSerializer):
         if obj.name:
             return {"en_name": obj.name,
                     "fa_name": obj.get_name_display()}
-        return None
 
 
 class ActivityResponseSerializer(serializers.ModelSerializer):
@@ -51,17 +50,6 @@ class UserResponseSerializer(serializers.ModelSerializer):
         return role
 
 
-# class EducationResponseSerializer(serializers.ModelSerializer):
-#     grade = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = Education
-#         fields = ["id", "field_of_study", "name_university", "grade", "start_years", "end_years", "is_student",
-#                   "description"]
-#
-#     def get_grade(self, obj):
-#         return {"en_name": obj.grade,
-#                 "fa_name": obj.get_grade_display()}
 
 class CategoryResponseSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
@@ -74,7 +62,6 @@ class CategoryResponseSerializer(serializers.ModelSerializer):
         if obj.name:
             return {"en_name": obj.name,
                     "fa_name": obj.get_name_display()}
-        return None
 
 
 class UserTokenSwaggerSerializer(serializers.Serializer):

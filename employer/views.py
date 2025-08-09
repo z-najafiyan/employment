@@ -1,4 +1,3 @@
-# Create your views here.
 import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -25,16 +24,8 @@ from other_files.helper import FactoryGetObject
 from other_files.permissions import IsEmployer
 
 
-class EmployerView(viewsets.ModelViewSet):
+class EmployerView(viewsets.GenericViewSet):
     permission_classes = [AllowAny]
-
-    # def get_permissions(self):
-    #     if self.action in ["sing_up", "sing_in"]:
-    #         self.permission_classes = [AllowAny]
-    #     else:
-    #         self.permission_classes = [IsAuthenticated, IsEmployer]
-    #
-    #     return super(EmployerView, self).get_permissions()
 
     @swagger_auto_schema(**swagger_kwargs["sing_up"])
     @action(methods=["POST"], detail=False)
@@ -120,7 +111,7 @@ class EmployerView(viewsets.ModelViewSet):
     @swagger_auto_schema(**swagger_kwargs["employer"])
     @action(methods=["GET"], detail=False)
     def employer(self, request):
-        # user = User.objects.get(pk=2)
+
         user = request.user
         employer = FactoryGetObject.find_object(Employer, user=user)
         serializer = EmployerSerializer(employer)
@@ -190,7 +181,6 @@ class EmployerView(viewsets.ModelViewSet):
                                                                              many=True).data).data
             return Response(res)
         else:
-            # user = User.objects.get(pk=1)
             user=request.user
             announcement = FactoryGetObject.find_object(Announcement, pk=pk)
             applicant = FactoryGetObject.find_object(Applicant, pk=request.data["id"])
@@ -224,7 +214,6 @@ class EmployerView(viewsets.ModelViewSet):
             announcement=announcement,
             applicant_status="rejected",
             user=request.user)
-            # user=User.objects.get(pk=2), )
         return Response({"message": "done"}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(**swagger_kwargs["confirmation"])
@@ -234,7 +223,7 @@ class EmployerView(viewsets.ModelViewSet):
         announcement = Announcement.objects.filter(applicant=applicant).first()
         applicant.applicant_status = "confirmation_for_interview"
         applicant.save()
-        # user = User.objects.get(pk=2)
+
         user=request.user
 
         _ = StatusLog.objects.create(
@@ -252,7 +241,7 @@ class EmployerView(viewsets.ModelViewSet):
 
         applicant.applicant_status = "hired"
         applicant.save()
-        # user = User.objects.get(pk=2)
+
         user=request.user
         _ = StatusLog.objects.create(
             candidate=applicant.candidate,
@@ -269,7 +258,6 @@ class EmployerView(viewsets.ModelViewSet):
         applicant.applicant_status = "awaiting_status"
         applicant.save()
         user = request.user
-        # user = User.objects.get(pk=2)
 
         _ = StatusLog.objects.create(
             candidate=applicant.candidate,

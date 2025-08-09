@@ -132,10 +132,3 @@ swagger_kwargs = {
              },
 
 }
-
-# education = [swagger_kwargs["education_post"], swagger_kwargs["education_get"], swagger_kwargs["education_delete"]]
-# skill = [swagger_kwargs["skill_post"], swagger_kwargs["skill_get"], swagger_kwargs["skill_delete"]]
-# job_preference = [swagger_kwargs["job_preference_post"], swagger_kwargs["job_preference_get"],
-#                   swagger_kwargs["job_preference_delete"]]
-# work_experience = [swagger_kwargs["work_experience_post"], swagger_kwargs["work_experience_get"],
-#                    swagger_kwargs["work_experience_delete"]]

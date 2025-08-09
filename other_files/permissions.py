@@ -6,16 +6,10 @@ from rolepermissions.roles import get_user_roles
 class IsCandidate(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
-        role = has_role(user,"candidate")
-        if role:
-            return True
-        return False
+        return has_role(user,"candidate")
 
 
 class IsEmployer(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
-        role = has_role(user,"employer")
-        if role:
-            return True
-        return False
+        return has_role(user,"employer")

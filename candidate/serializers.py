@@ -11,7 +11,6 @@ from other_files.response_serialzer import (ProvinceResponseSerializer, UserResp
 
 
 class CandidateUserPostSerializer(serializers.ModelSerializer):
-    # sing_up
     class Meta:
         model = User
         fields = ["id", "email", "first_name", "last_name", "password"]
@@ -31,18 +30,9 @@ class CandidateUserPostSerializer(serializers.ModelSerializer):
 
 
 class CandidateUserSingInSerializer(serializers.ModelSerializer):
-    # sing_in
     class Meta:
         model = User
         fields = ["email", "password"]
-
-
-# class CandidateUserSerializer(serializers.ModelSerializer):
-#     mobile = serializers.CharField(max_length=11, allow_null=True, )
-#
-#     class Meta:
-#         model = User
-#         fields = ["email", "mobile"]
 
 
 class CandidateSerializer(serializers.ModelSerializer):
@@ -74,17 +64,14 @@ class CandidateSkillSerializer(serializers.ModelSerializer):
 
 
 class CandidateProfessionalSkillSerializer(WritableNestedModelSerializer):
-    # skill = CandidateSkillSerializer()
 
     class Meta:
         model = ProfessionalSkill
         fields = ["id", "skill", "mastery_level",
-                  # "resumes"]
                   ]
 
 
 class CandidateProfessionalSkillGetSerializer(serializers.ModelSerializer):
-    # skill = CandidateSkillSerializer()
     mastery_level = serializers.SerializerMethodField()
 
     class Meta:
@@ -134,7 +121,6 @@ class CandidateLanguageGetSerializer(serializers.ModelSerializer):
 
 class CandidateJobPreferenceGetSerializer(serializers.ModelSerializer):
     province = ProvinceResponseSerializer()
-    # job_benefits = JobBenefitsResponseSerializer(many=True)
     type_cooperation = serializers.SerializerMethodField()
     mastery_level = serializers.SerializerMethodField()
     minimum_salary = serializers.SerializerMethodField()
@@ -185,7 +171,6 @@ class CandidateEducationGETSerializer(serializers.ModelSerializer):
 
 
 class CandidatePersonalInfoGETSerializer(serializers.ModelSerializer):
-    # province = ProvinceResponseSerializer()
     image = serializers.CharField(source="link")
     gender = serializers.SerializerMethodField()
     marital_status = serializers.SerializerMethodField()
@@ -262,19 +247,16 @@ class CandidateResumeGETSerializer(serializers.ModelSerializer):
 
     def get_category(self, obj):
         if obj.category:
-            res = {"en_name": obj.category,
+            response = {"en_name": obj.category,
                    "fa_name": obj.get_category_display()}
+            return response
 
-        return None
 
     def get_mobile(self, obj):
         return obj.candidates.mobile
 
     def get_email(self, obj):
         return obj.candidates.email
-
-    def get_file(self, obj):
-        return None
 
 
 class CandidateResumePatchSerializer(serializers.ModelSerializer):
@@ -317,7 +299,6 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
         if obj.type_cooperation:
             return {"en_name": obj.type_cooperation,
                     "fa_name": obj.get_type_cooperation_display()}
-        return None
 
     def get_applicant(self, obj):
         if "user" in self.context:
@@ -326,8 +307,6 @@ class CandidateAnnouncementListSerializer(serializers.ModelSerializer):
                 return None
             elif applicant.applicant_status:
                 return {"applicant_status": applicant.get_applicant_status_display()}
-            return None
-        return None
 
 
 class CandidateCompanyDetailSerializer(serializers.ModelSerializer):
@@ -354,25 +333,21 @@ class CandidateAnnouncementDetailSerializer(serializers.ModelSerializer):
         if obj.type_cooperation:
             return {"en_name": obj.type_cooperation,
                     "fa_name": obj.get_type_cooperation_display()}
-        return None
 
     def get_military_service(self, obj):
         if obj.military_service:
             return {"en_name": obj.military_service,
                     "fa_name": obj.get_military_service_display()}
-        return None
 
     def get_gender(self, obj):
         if obj.gender:
             return {"en_name": obj.gender,
                     "fa_name": obj.get_gender_display()}
-        return None
 
     def get_years_work_experience(self, obj):
         if obj.years_work_experience:
             return {"en_name": obj.years_work_experience,
                     "fa_name": obj.get_years_work_experience_display()}
-        return None
 
 
 class CandidateMarkedAnnouncementPostSerializer(serializers.ModelSerializer):
